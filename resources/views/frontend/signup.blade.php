@@ -20,22 +20,23 @@
         <div id="page-content">
             <div class="container">
                 <ol class="breadcrumb">
-                    <li><a href="#">Home</a></li>
-                    <li><a href="#">Pages</a></li>
-                    <li class="active">Contact</li>
+                    <li><a href="{{route('home')}}">Inicio</a></li>
+                    <li class="active">Registrate</li>
                 </ol>
+                @include('partials.messages')
                 <div class="row">
                     <div class="col-md-4 col-sm-4 col-md-offset-4 col-sm-offset-4">
                         <section class="page-title">
                             <h1>Registrate ahora</h1>
-                        </section
+                        </section>
                         <section>
-                            <form class="form inputs-underline">
+                            <form class="form inputs-underline" method="POST" action="{{route('signup.register')}}">
+                                {{csrf_field()}}
                                 <div class="row">
                                     <div class="col-md-6 col-sm-6">
                                         <div class="form-group">
                                             <label for="first_name">Nombre</label>
-                                            <input type="text" class="form-control" name="first_name" id="first_name" placeholder="Nombre">
+                                            <input type="text" class="form-control" name="name" id="first_name" placeholder="Nombre">
                                         </div>
                                     </div>
                                     <div class="col-md-6 col-sm-6">
@@ -64,7 +65,7 @@
 
                             <hr>
 
-                            <p class="center">Si ya tenés un usuario, hacé click en <a href="#">Iniciar sesión</a>.</p>
+                            <p class="center">Si ya tenés un usuario, hacé click en <a href="{{ route('signin') }}">Iniciar sesión</a>.</p>
                         </section>
                     </div>
                 </div>

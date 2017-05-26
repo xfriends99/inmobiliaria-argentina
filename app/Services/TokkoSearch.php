@@ -23,7 +23,7 @@ class TokkoSearch
     var $current_search_order_by = "price";
 
     var $results_format = "json";
-  
+
     var $search_data = null;
     var $geo_data = null;
     var $search_results = null;
@@ -82,21 +82,21 @@ class TokkoSearch
     function get_operation_name($id){
         if ($this->auth->get_language() == 'en'){
             switch ($id) {
-            case 1:
-                return "Sale";
-            case 2:
-                return "Rent";
-            case 3:
-                return "Temporary Rent";
+                case 1:
+                    return "Sale";
+                case 2:
+                    return "Rent";
+                case 3:
+                    return "Temporary Rent";
             }
         }else{
             switch ($id) {
-            case 1:
-                return "Venta";
-            case 2:
-                return "Alquiler";
-            case 3:
-                return "Alquiler Temporario";
+                case 1:
+                    return "Venta";
+                case 2:
+                    return "Alquiler";
+                case 3:
+                    return "Alquiler Temporario";
             }
         }
     }
@@ -131,7 +131,7 @@ class TokkoSearch
     }
 
     function get_search_offset(){
-      return ($this->get_current_page()-1) * $this->get_current_page_limit();
+        return ($this->get_current_page()-1) * $this->get_current_page_limit();
     }
 
 
@@ -141,7 +141,7 @@ class TokkoSearch
 
     function set_search_data($search_data){
         if (gettype($search_data) == 'string'){
-             try{
+            try{
                 $this->search_data = $this->decode_search_data($search_data);
             } catch (Exception $e) {
                 $this->search_data = null;
@@ -152,9 +152,8 @@ class TokkoSearch
     }
 
     function get_search_order_by(){
-        $order_by = $_REQUEST[$this->querystring_order_by_key];
-        if ($order_by){
-            $this->current_search_order_by = $order_by;
+        if (isset($_REQUEST[$this->querystring_order_by_key])){
+            $this->current_search_order_by = $_REQUEST[$this->querystring_order_by_key];
         }else{
             $this->current_search_order_by = $this->default_search_order_by;
         }
@@ -170,9 +169,8 @@ class TokkoSearch
     }
 
     function get_search_order(){
-        $order = $_REQUEST[$this->querystring_order_key];
-        if ($order){
-            $this->current_search_order = $order;
+        if (isset($_REQUEST[$this->querystring_order_key])){
+            $this->current_search_order = $_REQUEST[$this->querystring_order_key];
         }else{
             $this->current_search_order = $this->default_search_order;
         }
@@ -182,9 +180,13 @@ class TokkoSearch
     function __construct($auth, $search_data=null) {
         $this->auth = $auth;
         if ($search_data == null){
-            try{
-                $this->search_data = $this->decode_search_data($_REQUEST[$this->querystring_data_key]);
-            } catch (Exception $e) {
+            if(isset($_REQUEST[$this->querystring_data_key])){
+                try{
+                    $this->search_data = $this->decode_search_data($_REQUEST[$this->querystring_data_key]);
+                } catch (Exception $e) {
+                    $this->search_data = null;
+                }
+            } else {
                 $this->search_data = null;
             }
         }else{
@@ -245,88 +247,88 @@ class TokkoSearch
 
     function deploy_google_map($api_google='AIzaSyCTyr98mlkJl0GLTVc8WmBI5X0UZJshOm4', $container_id='map',$icon_url=null, $classes="", $must_deploy_js=true, $must_deploy_container=true, $infowindow_url=null, $infoowindow_method='click'){
 
-      if($must_deploy_js){
-        echo '<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key='.$api_google.'&sensor=false"></script>';
-      }
-
-      if($must_deploy_container){
-        echo '<div id="'.$container_id.'"';
-        if($classes != "" && $classes != null){
-          echo 'class="'.$classes.'"';
+        if($must_deploy_js){
+            echo '<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key='.$api_google.'&sensor=false"></script>';
         }
-        echo ' ></div>';
-      }
 
-      echo '<script>';
-      echo 'var mapOptions = {';
-      echo 'center: new google.maps.LatLng(-34.380, -58.71),';
-      echo 'zoom: 12';
-      echo '};';
+        if($must_deploy_container){
+            echo '<div id="'.$container_id.'"';
+            if($classes != "" && $classes != null){
+                echo 'class="'.$classes.'"';
+            }
+            echo ' ></div>';
+        }
 
-      echo 'var map = new google.maps.Map(document.getElementById("'.$container_id.'"), mapOptions);';
+        echo '<script>';
+        echo 'var mapOptions = {';
+        echo 'center: new google.maps.LatLng(-34.380, -58.71),';
+        echo 'zoom: 12';
+        echo '};';
 
-      echo 'var markers = {};';
-      echo 'var open_window = null;';
-      echo 'var current_id = null;';
+        echo 'var map = new google.maps.Map(document.getElementById("'.$container_id.'"), mapOptions);';
 
-      echo 'var pinShadow = new google.maps.MarkerImage("http://chart.apis.google.com/chart?chst=d_map_pin_shadow",';
-      echo 'new google.maps.Size(40, 37),';
-      echo 'new google.maps.Point(0, 0),';
-      echo 'new google.maps.Point(12, 35));';
+        echo 'var markers = {};';
+        echo 'var open_window = null;';
+        echo 'var current_id = null;';
 
-      if($icon_url){
-        echo 'var pinImage_red = new google.maps.MarkerImage("'.$icon_url.'",';
+        echo 'var pinShadow = new google.maps.MarkerImage("http://chart.apis.google.com/chart?chst=d_map_pin_shadow",';
         echo 'new google.maps.Size(40, 37),';
-        echo 'new google.maps.Point(0,0),';
+        echo 'new google.maps.Point(0, 0),';
         echo 'new google.maps.Point(12, 35));';
-      }
 
-      echo 'function add_new_marker(id, lat,lng){';
-      echo 'var latLng = new google.maps.LatLng(lat, lng);';
-      echo 'marker = new google.maps.Marker({';
+        if($icon_url){
+            echo 'var pinImage_red = new google.maps.MarkerImage("'.$icon_url.'",';
+            echo 'new google.maps.Size(40, 37),';
+            echo 'new google.maps.Point(0,0),';
+            echo 'new google.maps.Point(12, 35));';
+        }
+
+        echo 'function add_new_marker(id, lat,lng){';
+        echo 'var latLng = new google.maps.LatLng(lat, lng);';
+        echo 'marker = new google.maps.Marker({';
         echo 'position: latLng,';
         echo 'animation: google.maps.Animation.DROP,';
         echo 'shadow: pinShadow,';
         if($icon_url){
-          echo 'icon: pinImage_red,';
+            echo 'icon: pinImage_red,';
         }
-   	echo 'map: map,';
+        echo 'map: map,';
         echo 'draggable: false,';
         echo 'visible: true';
         echo '});';
 
-      echo 'markers[id] = {"marker": marker, "info": null};';
+        echo 'markers[id] = {"marker": marker, "info": null};';
 
-      if($infowindow_url){
-        echo 'google.maps.event.addListener(markers[id].marker, "'.$infoowindow_method.'", function() {';
-          echo 'if (open_window) { open_window.close();}';
-          echo 'if (!markers[id].info) {';
-          echo 'infoWindow = new google.maps.InfoWindow({';
-          echo 'content:"<div style=\'width:220px;height:90px; text-align:center\' id=\'prop_tooltip_"+id+"\' class=\'infowindow-main-div\'><span>Cargando...</span></div>"';
-          echo '});';
-          echo 'var jqxhr = $.ajax("'.$infowindow_url.'?id="+id)';
+        if($infowindow_url){
+            echo 'google.maps.event.addListener(markers[id].marker, "'.$infoowindow_method.'", function() {';
+            echo 'if (open_window) { open_window.close();}';
+            echo 'if (!markers[id].info) {';
+            echo 'infoWindow = new google.maps.InfoWindow({';
+            echo 'content:"<div style=\'width:220px;height:90px; text-align:center\' id=\'prop_tooltip_"+id+"\' class=\'infowindow-main-div\'><span>Cargando...</span></div>"';
+            echo '});';
+            echo 'var jqxhr = $.ajax("'.$infowindow_url.'?id="+id)';
             echo '.done(function(result) {';
             echo '$("#prop_tooltip_"+id).html(result);';
             echo 'markers[id]["info"] = new google.maps.InfoWindow({';
-              echo 'content:"<div id=\'prop_tooltip_"+id+"\' class=\'infowindow-main-div\'>"+result+"</div>"';
+            echo 'content:"<div id=\'prop_tooltip_"+id+"\' class=\'infowindow-main-div\'>"+result+"</div>"';
             echo '});';
-          echo '});';
-    
-          echo 'markers[id]["info"] = infoWindow;';
-          echo '}';
-          echo 'markers[id].info.open(map,markers[id].marker);';
-          echo 'open_window = markers[id].info;';
-        echo '});';
-      }
-    echo '}';
+            echo '});';
 
-    foreach($this->get_geo_data() as $geo){
-      if($geo->geo_lat && $geo->geo_long){
-        echo 'add_new_marker("'.$geo->id.'", "'.$geo->geo_lat.'", "'.$geo->geo_long.'");';
-      }
+            echo 'markers[id]["info"] = infoWindow;';
+            echo '}';
+            echo 'markers[id].info.open(map,markers[id].marker);';
+            echo 'open_window = markers[id].info;';
+            echo '});';
+        }
+        echo '}';
+
+        foreach($this->get_geo_data() as $geo){
+            if($geo->geo_lat && $geo->geo_long){
+                echo 'add_new_marker("'.$geo->id.'", "'.$geo->geo_lat.'", "'.$geo->geo_long.'");';
+            }
+        }
+
+        echo '</script>';
     }
 
-    echo '</script>';
-  }
-  
 }

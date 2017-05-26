@@ -20,9 +20,8 @@
         <div id="page-content">
             <div class="container">
                 <ol class="breadcrumb">
-                    <li><a href="#">Home</a></li>
-                    <li><a href="#">Pages</a></li>
-                    <li class="active">Contact</li>
+                    <li><a href="{{route('home')}}">Inicio</a></li>
+                    <li class="active">Listo</li>
                 </ol>
                 <section class="page-title center error">
                     <h1>Listo</h1>

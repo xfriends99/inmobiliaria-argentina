@@ -45,8 +45,6 @@
 </head>
 
 {{-- container section --}}
-
-
 @yield('content')
 
 {{-- js section --}}
@@ -68,6 +66,15 @@
 <script type="text/javascript" src="{{ asset('assets/js/jssocials.min.js') }}"></script>
 <script type="text/javascript" src="{{ asset('assets/js/custom.js') }}"></script>
 <script type="text/javascript" src="{{ asset('assets/js/maps.js') }}"></script>
+<script>
+    $(document).ready(function(){
+       if($('.alert').attr('class')!=undefined){
+           setTimeout(function(){
+               $('.alert').slideUp('slow');
+           }, 3000);
+       }
+    });
+</script>
 
 @yield('scripts')
 @show

@@ -28,7 +28,7 @@
                             <h2 class="hidden-sm hidden-md hidden-lg">Agendá ahora una visita y descubrí oportunidades imperdibles</h2>
                         </div>
                         <div class="form search-form horizontal">
-                            <form>
+                            <form method="GET" action="{{route('search')}}">
                                 <div class="row">
                                     <div class="col-md-2 col-sm-6">
                                         <div class="form-group">
@@ -70,7 +70,7 @@
                 </div>
             </div>
             <div class="background-wrapper">
-                <div class="bg-transfer opacity-90"><img src="assets/img/bg-1.jpeg" title="Club Inmueble" alt="Club Inmueble"></div>
+                <div class="bg-transfer opacity-90"><img src="/assets/img/bg-1.jpeg" title="Club Inmueble" alt="Club Inmueble"></div>
                 <div class="background-color background-color-black"></div>
             </div>
         </div>
@@ -88,134 +88,33 @@
 
                 <div class="row">
                     <!--PROPIEDAD-->
-                    <div class="col-md-3 col-sm-3">
-                        <div class="item" data-id="1">
-                            <a href="propiedad.php">
-                                <div class="description description-grid">
-                                    <div class="label label-default">Operación</div>
-                                    <div class="label label-default bg-green">Apto Crédito</div>
-                                    <h3>Dueño Alquila Studio Amueblado en Complejo Art Maria</h3>
-                                    <address><i class="fa fa-map-marker"></i> Dirección</address>
+                    @foreach($properties as $d)
+                        <div class="col-md-3 col-sm-3">
+                            <div class="item" data-id="{{$d->data->id}}">
+                                <a href="{{route('propiedad', $d->data->id)}}">
+                                    <div class="description description-grid">
+                                        <div class="label label-default">Operación</div>
+                                        <div class="label label-default bg-green">Apto Crédito</div>
+                                        <h3>{{$d->data->publication_title}}</h3>
+                                        <address><i class="fa fa-map-marker"></i> {{$d->data->address}}</address>
+                                    </div>
+                                    <div class="image bg-transfer">
+                                        @if(isset($d->data->photos[0]))
+                                            <img src="{{$d->data->photos[0]->image}}" alt="">
+                                        @endif
+                                    </div>
+                                </a>
+                                <div class="additional-info">
+                                    <div class="rating-passive"><span class="reviews">{{$d->data->room_amount}} ambientes</span></div>
+                                    <div class="controls-more"><a href="#">{{$d->get_available_prices()[0]}}</a></div>
                                 </div>
-                                <div class="image bg-transfer">
-                                    <img src="assets/img/items/2.jpg" alt="">
-                                </div>
-                            </a>
-                            <div class="additional-info">
-                                <div class="rating-passive"><span class="reviews">3 ambientes</span></div>
-                                <div class="controls-more"><a href="#">U$S 20.000</a></div>
                             </div>
                         </div>
-                    </div>
-                    <!--PROPIEDAD-->
-                    <!--PROPIEDAD-->
-                    <div class="col-md-3 col-sm-3">
-                        <div class="item" data-id="1">
-                            <a href="propiedad.php">
-                                <div class="description description-grid">
-                                    <div class="label label-default">Operación</div>
-                                    <div class="label label-default bg-green">Apto Crédito</div>
-                                    <h3>Dueño Alquila Studio Amueblado en Complejo Art Maria</h3>
-                                    <address><i class="fa fa-map-marker"></i> Dirección</address>
-                                </div>
-                                <div class="image bg-transfer">
-                                    <img src="assets/img/items/2.jpg" alt="">
-                                </div>
-                            </a>
-                            <div class="additional-info">
-                                <div class="rating-passive"><span class="reviews">3 ambientes</span></div>
-                                <div class="controls-more"><a href="#">U$S 20.000</a></div>
-                            </div>
-                        </div>
-                    </div>
-                    <!--PROPIEDAD-->
-                    <!--PROPIEDAD-->
-                    <div class="col-md-6 col-sm-6">
-                        <div class="item" data-id="1">
-                            <a href="propiedad.php">
-                                <div class="description description-grid">
-                                    <div class="label label-default">Operación</div>
-                                    <div class="label label-default bg-green">Apto Crédito</div>
-                                    <h3>Dueño Alquila Studio Amueblado en Complejo Art Maria</h3>
-                                    <address><i class="fa fa-map-marker"></i> Dirección</address>
-                                </div>
-                                <div class="image bg-transfer">
-                                    <img src="assets/img/items/2.jpg" alt="">
-                                </div>
-                            </a>
-                            <div class="additional-info">
-                                <div class="rating-passive"><span class="reviews">3 ambientes</span></div>
-                                <div class="controls-more"><a href="#">U$S 20.000</a></div>
-                            </div>
-                        </div>
-                    </div>
-                    <!--PROPIEDAD-->
-                    <!--PROPIEDAD-->
-                    <div class="col-md-5 col-sm-5">
-                        <div class="item" data-id="1">
-                            <a href="propiedad.php">
-                                <div class="description description-grid">
-                                    <div class="label label-default">Operación</div>
-                                    <div class="label label-default bg-green">Apto Crédito</div>
-                                    <h3>Dueño Alquila Studio Amueblado en Complejo Art Maria</h3>
-                                    <address><i class="fa fa-map-marker"></i> Dirección</address>
-                                </div>
-                                <div class="image bg-transfer">
-                                    <img src="assets/img/items/2.jpg" alt="">
-                                </div>
-                            </a>
-                            <div class="additional-info">
-                                <div class="rating-passive"><span class="reviews">3 ambientes</span></div>
-                                <div class="controls-more"><a href="#">U$S 20.000</a></div>
-                            </div>
-                        </div>
-                    </div>
-                    <!--PROPIEDAD-->
-                    <!--PROPIEDAD-->
-                    <div class="col-md-4 col-sm-4">
-                        <div class="item" data-id="1">
-                            <a href="propiedad.php">
-                                <div class="description description-grid">
-                                    <div class="label label-default">Operación</div>
-                                    <div class="label label-default bg-green">Apto Crédito</div>
-                                    <h3>Dueño Alquila Studio Amueblado en Complejo Art Maria</h3>
-                                    <address><i class="fa fa-map-marker"></i> Dirección</address>
-                                </div>
-                                <div class="image bg-transfer">
-                                    <img src="assets/img/items/2.jpg" alt="">
-                                </div>
-                            </a>
-                            <div class="additional-info">
-                                <div class="rating-passive"><span class="reviews">3 ambientes</span></div>
-                                <div class="controls-more"><a href="#">U$S 20.000</a></div>
-                            </div>
-                        </div>
-                    </div>
-                    <!--PROPIEDAD-->
-                    <!--PROPIEDAD-->
-                    <div class="col-md-3 col-sm-3">
-                        <div class="item" data-id="1">
-                            <a href="propiedad.php">
-                                <div class="description description-grid">
-                                    <div class="label label-default">Operación</div>
-                                    <div class="label label-default bg-green">Apto Crédito</div>
-                                    <h3>Dueño Alquila Studio Amueblado en Complejo Art Maria</h3>
-                                    <address><i class="fa fa-map-marker"></i> Dirección</address>
-                                </div>
-                                <div class="image bg-transfer">
-                                    <img src="assets/img/items/2.jpg" alt="">
-                                </div>
-                            </a>
-                            <div class="additional-info">
-                                <div class="rating-passive"><span class="reviews">3 ambientes</span></div>
-                                <div class="controls-more"><a href="#">U$S 20.000</a></div>
-                            </div>
-                        </div>
-                    </div>
+                    @endforeach
                     <!--PROPIEDAD-->
                 </div>
                 <div class="center">
-                    <a href="#" class="btn btn-primary btn-light-frame btn-rounded btn-framed arrow">Ver todas las propiedades</a>
+                    <a href="{{route('search')}}" class="btn btn-primary btn-light-frame btn-rounded btn-framed arrow">Ver todas las propiedades</a>
                 </div>
             </div>
         </section>

@@ -20,9 +20,8 @@
         <div id="page-content">
             <div class="container">
                 <ol class="breadcrumb">
-                    <li><a href="#">Home</a></li>
-                    <li><a href="#">Pages</a></li>
-                    <li class="active">Contact</li>
+                    <li><a href="{{route('home')}}">Inicio</a></li>
+                    <li class="active">Nosotros</li>
                 </ol>
                 <section class="page-title">
                     <h1>Acerca de Club Inmueble</h1>

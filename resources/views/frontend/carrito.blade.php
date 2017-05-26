@@ -20,9 +20,8 @@
         <div id="page-content">
             <div class="container">
                 <ol class="breadcrumb">
-                    <li><a href="#">Home</a></li>
-                    <li><a href="#">Pages</a></li>
-                    <li class="active">Contact</li>
+                    <li><a href="{{route('home')}}">Inicio</a></li>
+                    <li class="active">Mis Propiedades</li>
                 </ol>
                 <div class="row">
                     <div class="col-md-12 ">
@@ -33,9 +32,9 @@
                             <div class="row">
                                 <!--PROPIEDAD-->
                                 <div class="item item-row" data-id="1" data-latitude="40.72807182" data-longitude="-73.85735035">
-                                    <a href="#">
+                                    <a href="propiedad.php">
                                         <div class="image">
-                                            <img class="img-height-100" src="{{asset('assets/img/items/1.jpg')}}" alt="">
+                                            <img class="img-height-100" src="assets/img/items/1.jpg" alt="">
                                         </div>
                                         <div class="description description-row">
                                             <div class="label label-default">Tipo de Operación</div>

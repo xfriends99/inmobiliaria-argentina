@@ -1,7 +1,7 @@
 <header id="page-header">
     <nav>
         <div class="left">
-            <a href="{{route('home')}}" class="brand"><img src="assets/img/logo.png" alt=""></a>
+            <a href="{{route('home')}}" class="brand"><img src="/assets/img/logo.png" alt=""></a>
         </div>
         <div class="right">
             <div class="primary-nav has-mega-menu">
@@ -24,11 +24,19 @@
                     <li><a href="" class="text-green xs-text-white">¡Apto crédito!</a></li>
                 </ul>
             </div>
-            <div class="secondary-nav">
-                <a href="{{route('signin')}}">Iniciar sesión</a>
-                <a href="{{route('signup')}}" class="promoted">Registrate</a>
-            </div>
+            @if(Auth::check())
+                <div class="secondary-nav">
+                    <a href="{{route('logout')}}">Cerrar sesión</a>
+                </div>
+            @else
+                <div class="secondary-nav">
+                    <a href="{{route('signin')}}">Iniciar sesión</a>
+                    <a href="{{route('signup')}}" class="promoted">Registrate</a>
+                </div>
+            @endif
+            @if(Auth::check())
             <a href="{{route('carrito')}}" class="btn btn-primary btn-small btn-rounded icon shadow add-listing" ><i class="fa fa-shopping-cart"></i><span>Ver mi lista de propiedades</span></a>
+            @endif
             <div class="nav-btn">
                 <i></i>
                 <i></i>
