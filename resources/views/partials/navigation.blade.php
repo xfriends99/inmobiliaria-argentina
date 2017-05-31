@@ -12,16 +12,31 @@
                         <div class="wrapper">
                             <div id="nav-listing" class="nav-wrapper">
                                 <ul>
-                                    <li><a href="#">Emprendimientos</a></li>
-                                    <li><a href="#">Casas</a>
-                                    <li><a href="#">Departamentos</a>
-                                    <li><a href="#">Cocheras</a>
-                                    <li><a href="#">Locales</a>
+                                    <li><a href="{{route('search')}}?propiedad=1">Terreno</a></li>
+                                    <li><a href="{{route('search')}}?propiedad=2">Departamento</a></li>
+                                    <li><a href="{{route('search')}}?propiedad=3">Casa</a></li>
+                                    <li><a href="{{route('search')}}?propiedad=4">Quinta</a></li>
+                                    <li><a href="{{route('search')}}?propiedad=5">Oficina</a></li>
+                                    <li><a href="{{route('search')}}?propiedad=6">Amarra</a></li>
+                                    <li><a href="{{route('search')}}?propiedad=7">Local</a></li>
+                                    <li><a href="{{route('search')}}?propiedad=8">Edificio Comercial</a></li>
+                                    <li><a href="{{route('search')}}?propiedad=9">Campo</a></li>
+                                    <li><a href="{{route('search')}}?propiedad=10">Cochera</a></li>
+                                    <li><a href="{{route('search')}}?propiedad=11">Hotel</a></li>
+                                    <li><a href="{{route('search')}}?propiedad=12">Nave Industrial</a></li>
+                                    <li><a href="{{route('search')}}?propiedad=13">PH</a></li>
+                                    <li><a href="{{route('search')}}?propiedad=14">Depósito</a></li>
+                                    <li><a href="{{route('search')}}?propiedad=15">Fondo de Comercio</a></li>
+                                    <li><a href="{{route('search')}}?propiedad=16">Baulera</a></li>
+                                    <li><a href="{{route('search')}}?propiedad=17">Bodegas</a></li>
+                                    <li><a href="{{route('search')}}?propiedad=18">Fincas</a></li>
+                                    <li><a href="{{route('search')}}?propiedad=19">Chacra</a></li>
+                                    <li><a href="{{route('search')}}?propiedad=20">Cama Nautica</a></li>
                                 </ul>
                             </div>
                         </div>
                     </li>
-                    <li><a href="" class="text-green xs-text-white">¡Apto crédito!</a></li>
+                    <li><a href="{{route('search')}}" class="text-green xs-text-white">¡Apto crédito!</a></li>
                 </ul>
             </div>
             @if(Auth::check())

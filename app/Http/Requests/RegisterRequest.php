@@ -25,6 +25,8 @@ class RegisterRequest extends FormRequest
             'email.required'  => 'El correo electrónico es requerido',
             'email.email'  => 'Ingrese un correo electrónico valido',
             'email.unique'  => 'El correo electrónico ingresado ya existe',
+            'phone.required'  => 'El número de teléfono es requerido',
+            'phone.numeric'  => 'Ingrese un número de teléfono valido',
             'password.required'  => 'La contraseña es requerida',
             'password.min'  => 'La contraseña debe tener una longitud minima de 6',
             'confirm_password.required' => 'Debes confirmar la contraseña',
@@ -43,7 +45,7 @@ class RegisterRequest extends FormRequest
             'name' => 'required',
             'last_name' => 'required',
             'email'      => 'required|email|unique:users,email',
-            //'username'   => 'required|unique:users,username',
+            'phone'   => 'required|numeric',
             'password'   => 'required|min:6',
             'confirm_password' => 'required|same:password'
         ];

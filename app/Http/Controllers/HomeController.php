@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Services\TokkoAuth;
 use App\Services\TokkoProperty;
+use App\Services\TokkoPropertyTypes;
 use App\Services\TokkoSearch;
 use Illuminate\Http\Request;
 
@@ -17,17 +18,14 @@ class HomeController extends Controller
         $tokko_search = new TokkoSearch($auth, $example_data);
         $tokko_search->do_search();
         $properties = $tokko_search->get_properties();
-        return view('frontend.homepage', compact('properties', 'tokko_search'));
+        $tokko_properties = new TokkoPropertyTypes($auth);
+        $tokko_properties = $tokko_properties->property_types;
+        return view('frontend.homepage', compact('properties', 'tokko_search', 'tokko_properties'));
     }
 
     public function inmobiliarias()
     {
         return view('frontend.inmobiliarias');
-    }
-
-    public function carrito()
-    {
-        return view('frontend.carrito');
     }
 
     public function nosotros()

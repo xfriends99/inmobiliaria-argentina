@@ -217,6 +217,25 @@ class TokkoSearch
         }
     }
 
+    function do_search_page($page, $limit=null, $order_by=null, $order=null){
+        try {
+            if (!$limit){ $limit = $this->get_current_page_limit();}
+            if (!$order_by){ $order_by = $this->get_search_order_by();}
+            if (!$order){ $order = $this->get_search_order();}
+
+            $url = $this->BASE_SEARCH_URL . "order_by=" . $order_by ."&order=". $order ."&format=". $this->results_format ."&key=". $this->auth->key ."&lang=". $this->auth->get_language() ."&limit=". $limit ."&offset=" . ($limit * $page) . "&data=" . json_encode($this->search_data);
+            $cp = curl_init();
+            curl_setopt($cp, CURLOPT_RETURNTRANSFER, 1);
+            curl_setopt($cp, CURLOPT_URL, $url);
+            curl_setopt($cp, CURLOPT_TIMEOUT, 60);
+            $this->search_results = json_decode(curl_exec($cp));
+            curl_close($cp);
+        } catch (Exception $e) {
+            $this->search_results = null;
+            echo "Error executing query.";
+        }
+    }
+
     function get_result_page_count(){
         if ($this->search_results == null){
             return 0;

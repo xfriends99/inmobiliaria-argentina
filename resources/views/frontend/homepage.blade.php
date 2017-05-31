@@ -33,7 +33,7 @@
                                     <div class="col-md-2 col-sm-6">
                                         <div class="form-group">
                                             <select class="form-control selectpicker" name="operacion">
-                                                <option value="1">Comprar</option>
+                                                <option value="1">Venta</option>
                                                 <option value="2">Alquilar</option>
                                                 <option value="2">Alquilar Temporalmente</option>
                                             </select>
@@ -42,14 +42,9 @@
                                     <div class="col-md-2 col-sm-6">
                                         <div class="form-group">
                                             <select class="form-control selectpicker" name="propiedad">
-                                                <option value="1">Departamento</option>
-                                                <option value="2">Casa</option>
-                                                <option value="3">Cochera</option>
-                                                <option value="4">Emprendimiento</option>
-                                                <option value="5">Terreno</option>
-                                                <option value="6">Local</option>
-                                                <option value="7">Oficina</option>
-                                                <option value="7">Campo</option>
+                                                @foreach($tokko_properties as $property)
+                                                <option value="{{$property->id}}">{{$property->name}}</option>
+                                                @endforeach
                                             </select>
                                         </div>
                                     </div>

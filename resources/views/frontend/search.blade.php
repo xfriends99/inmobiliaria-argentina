@@ -47,11 +47,11 @@
 
                                 <div class="pull-right">
                                     <div class="input-group inputs-underline min-width-150px">
-                                        <select class="form-control selectpicker" name="sort">
+                                        <select class="form-control selectpicker sort-search" name="sort">
                                             <option value="">Ordernar por</option>
-                                            <option value="1">Menor precio</option>
-                                            <option value="2">Mayor precio</option>
-                                            <option value="3">Más recientes</option>
+                                            <option value="1" @if(isset($request->orden) && $request->orden==1){{"selected"}}@endif>Menor precio</option>
+                                            <option value="2" @if(isset($request->orden) && $request->orden==2){{"selected"}}@endif>Mayor precio</option>
+                                            <option value="3" @if(isset($request->orden) && $request->orden==3){{"selected"}}@endif>Más recientes</option>
                                         </select>
                                     </div>
                                 </div>
@@ -87,23 +87,30 @@
                                 <!--PROPIEDAD-->
                             </div>
                         </section>
-
                         <section>
                             <div class="center">
                                 <nav aria-label="Page navigation">
                                     <ul class="pagination">
-                                        <li class="disabled previous">
-                                            <a href="#" aria-label="Previous">
+                                        <li class="@if($tokko_search->get_current_page()<=1){{"disabled"}}@endif previous">
+                                            <a href="@if($tokko_search->get_current_page()<=1){{"#"}}@else{{route('search')}}?@foreach($request->all() as $k => $r) @if($k!='page'){{$k.'='.$r.'&'}}@endif @endforeach{{'page='.($tokko_search->get_current_page()-1).'&'}}@endif" aria-label="Previous">
                                                 <i class="arrow_left"></i>
                                             </a>
                                         </li>
-                                        <li><a href="#">1</a></li>
-                                        <li><a href="#">2</a></li>
-                                        <li class="active"><a href="#">3</a></li>
-                                        <li><a href="#">4</a></li>
-                                        <li><a href="#">5</a></li>
-                                        <li class="next">
-                                            <a href="#" aria-label="Next">
+                                        @for($i = $tokko_search->get_current_page() - 4; $i<$tokko_search->get_current_page();$i=$i+1)
+                                            @if($i>=1)
+                                                <li><a href="{{route('search')}}?@foreach($request->all() as $k => $r) @if($k!='page'){{$k.'='.$r.'&'}}@endif @endforeach{{'page='.$i.'&'}}">{{$i}}</a></li>
+                                            @endif
+                                        @endfor
+                                        <li class="active"><a href="{{route('search')}}?@foreach($request->all() as $k => $r) @if($k!='page'){{$k.'='.$r.'&'}}@else{{$k.'='.$tokko_search->get_current_page().'&'}}@endif @endforeach">{{$tokko_search->get_current_page()}}</a></li>
+                                        <?php $adelante = 1 ?>
+                                        @for($i = $tokko_search->get_current_page()+1; $i<=$tokko_search->get_current_page()+4;$i=$i+1)
+                                            @if($i<=$tokko_search->get_result_page_count())
+                                                <li><a href="{{route('search')}}?@foreach($request->all() as $k => $r) @if($k!='page'){{$k.'='.$r.'&'}}@endif @endforeach{{'page='.$i.'&'}}">{{$i}}</a></li>
+                                            @endif
+                                            <?php $adelante++; ?>
+                                        @endfor
+                                        <li class="@if($tokko_search->get_current_page()>=$tokko_search->get_result_page_count()){{"disabled"}}@endif next">
+                                            <a href="@if($tokko_search->get_current_page()>=$tokko_search->get_result_page_count()){{"#"}}@else{{route('search')}}?@foreach($request->all() as $k => $r) @if($k!='page'){{$k.'='.$r.'&'}}@endif @endforeach{{'page='.($tokko_search->get_current_page()+1).'&'}}@endif" aria-label="Next">
                                                 <i class="arrow_right"></i>
                                             </a>
                                         </li>
@@ -123,5 +130,16 @@
 @stop
 
 @section('scripts')
+    <script>
+        $(document).ready(function(){
+           $('.disabled').click(function(e){
+             e.preventDefault();
+           });
 
+           $('.sort-search').change(function(){
+              var url = "{{route('search')}}?@foreach($request->all() as $k => $r) @if($k!='orden'){{$k.'='.$r.'&'}}@endif @endforeach";
+              location.replace(url+'orden='+$(this).val());
+           });
+        });
+    </script>
 @stop

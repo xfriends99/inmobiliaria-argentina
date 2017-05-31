@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Services\TokkoAuth;
+use App\Services\TokkoPropertyTypes;
 use App\Services\TokkoSearch;
+use App\Services\TokkoSearchForm;
 use Illuminate\Http\Request;
 
 class SearchController extends Controller
@@ -23,7 +25,7 @@ class SearchController extends Controller
         }
 
         if(isset($request->keyword) && $request->keyword!=''){
-            $data = '["address", "like", "'.$request->keyword.'"]';
+            $data = '["location", "=", "'.$request->keyword.'"]';
         } else {
             $data = '';
         }
@@ -31,17 +33,43 @@ class SearchController extends Controller
         "property_types":'.$property_types.',"currency":"USD","filters":['.$data.']}';
         $auth = new TokkoAuth(env('API_KEY'));
         $tokko_search = new TokkoSearch($auth, $example_data);
-        $tokko_search->do_search();
+        $orden = null;
+        $order_by = null;
+        if(isset($request->orden)){
+            if($request->orden==1){
+                $orden = 'ASC';
+                $order_by = 'price';
+            } else if($request->orden==2){
+                $orden = 'DESC';
+                $order_by = 'price';
+            } else {
+                $orden = 'DESC';
+                $order_by = 'age';
+            }
+        }
+
+        if(isset($request->page)){
+            $tokko_search->do_search_page($request->page, null, $order_by, $orden);
+        } else {
+            $tokko_search->do_search(null, $order_by, $orden);
+        }
+
         $properties = $tokko_search->get_properties();
+        $data_properties = [];
+        $tokko_properties = new TokkoPropertyTypes($auth);
+        foreach($tokko_properties->property_types as $p){
+            $data_properties[$p->id.''] = $p->name;
+        }
+        $tokko_search_form = new TokkoSearchForm($auth);
         /*foreach($properties as $p){
-            dd($p->data->photos[0]->image);
+            dd($p->data);
         }*/
         if(isset($request->ord) && $request->ord=='row'){
             return view('frontend.search_row', compact('properties', 'tokko_search', 'request'));
         } else if(isset($request->ord) && $request->ord=='map'){
             return view('frontend.search_map', compact('properties', 'tokko_search', 'request'));
         } else {
-            return view('frontend.search', compact('properties', 'tokko_search', 'request'));
+            return view('frontend.search', compact('properties', 'tokko_search', 'request', 'data_properties', 'tokko_search_form'));
         }
     }
 }

@@ -32,8 +32,17 @@
                                 <h3 class="display-inline">Precio de venta <strong>{{$property->get_available_prices()[0]}}</strong></h3>
                                 <div class="label label-default bg-green padding-5px display-inline">Apto Crédito</div>
                             </div>
-                            @if(Auth::check())
-                                <a href="#" class="btn btn-primary btn-rounded icon scroll pull-right hidden-xs"><i class="fa fa-shopping-cart"></i>Agregar a mi lista</a>
+                            @if(Auth::check() && !$property_user)
+                                <form method="POST" action="{{route('carrito.add', $data['id'])}}">
+                                    {{csrf_field()}}
+                                    <button type="submit" class="btn btn-primary btn-rounded icon scroll pull-right hidden-xs"><i class="fa fa-shopping-cart"></i>Agregar a mi lista</button>
+                                </form>
+
+                            @elseif(Auth::check() && $property_user)
+                                <form method="POST" action="{{route('carrito.delete', $data['id'])}}">
+                                    {{csrf_field()}}
+                                    <button type="submit" class="btn btn-primary btn-rounded icon scroll pull-right hidden-xs"><i class="fa fa-shopping-cart"></i>Borrar de mi lista</button>
+                                </form>
                             @endif
                         </section>
 
@@ -125,7 +134,7 @@
                                         <input type="text" @if(Auth::check()) readonly value="{{Auth::user()->name}}" @endif class="form-control" name="name" placeholder="Nombre">
                                     </div>
                                     <div class="form-group">
-                                        <input type="tel" class="form-control" name="phone" placeholder="Teléfono">
+                                        <input type="tel"  @if(Auth::check()) readonly value="{{Auth::user()->phone}}" @endif class="form-control" name="phone" placeholder="Teléfono">
                                     </div>
                                     <div class="form-group">
                                         <input type="email" @if(Auth::check()) readonly value="{{Auth::user()->email}}" @endif class="form-control" name="email" placeholder="Email">

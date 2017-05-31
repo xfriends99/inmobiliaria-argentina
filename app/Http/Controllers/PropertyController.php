@@ -3,13 +3,22 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ContactRequest;
+use App\Repositories\UserShoppingCarRepository;
 use App\Services\TokkoAuth;
 use App\Services\TokkoProperty;
 use App\Services\TokkoWebContact;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class PropertyController extends Controller
 {
+    protected $shoppingCar;
+
+    public function __construct(UserShoppingCarRepository $shoppingCar)
+    {
+        $this->shoppingCar = $shoppingCar;
+    }
+
     public function show($id)
     {
         $auth = new TokkoAuth(env('API_KEY'));
@@ -18,7 +27,8 @@ class PropertyController extends Controller
             abort(404);
         }
         $data = (array) $property->data;
-        return view('frontend.propiedad', compact('data', 'property'));
+        $property_user = $this->shoppingCar->search(['property_id' => $id, 'user_id' => Auth::user()->id])->get()->first();
+        return view('frontend.propiedad', compact('data', 'property', 'property_user'));
     }
 
     public function contact(ContactRequest $request, $id)

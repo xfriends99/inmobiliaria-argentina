@@ -37,12 +37,17 @@ Route::get('/inmobiliarias', [
 
 Route::get('/carrito', [
     'as' => 'carrito',
-    'uses' => 'HomeController@carrito'
+    'uses' => 'UserShoppingCarController@index'
 ]);
 
-Route::get('/carrito', [
-    'as' => 'carrito',
-    'uses' => 'HomeController@carrito'
+Route::post('{id}/carrito/add', [
+    'as' => 'carrito.add',
+    'uses' => 'UserShoppingCarController@store'
+]);
+
+Route::post('{id}/carrito/delete', [
+    'as' => 'carrito.delete',
+    'uses' => 'UserShoppingCarController@delete'
 ]);
 
 Route::get('/nosotros', [

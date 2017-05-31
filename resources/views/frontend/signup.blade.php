@@ -48,7 +48,11 @@
                                 </div>
                                 <div class="form-group">
                                     <label for="email">Email</label>
-                                    <input type="email" class="form-control" name="email" id="email" placeholder="Email">
+                                    <input type="email" class="form-control" name="email" id="email" placeholder="Correo electrónico">
+                                </div>
+                                <div class="form-group">
+                                    <label for="phone">Email</label>
+                                    <input type="text" class="form-control" name="phone" id="phone" placeholder="Teléfono">
                                 </div>
                                 <div class="form-group">
                                     <label for="password">Contraseña</label>

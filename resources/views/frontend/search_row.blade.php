@@ -74,8 +74,8 @@
                                             <div class="label label-default">Tipo de Operación</div>
                                             <div class="label label-default bg-green text-white">Apto Crédito</div>
                                             <h3>{{$d->data->publication_title}}</h3>
-                                            <address class="hidden-sm"><i class="fa fa-map-marker"></i> Dirección</address>
-                                            <p class="hidden-xs hidden-sm">{{$d->data->address}}</p>
+                                            <address class="hidden-sm"><i class="fa fa-map-marker"></i> {{$d->data->address}}</address>
+                                            <p class="hidden-xs hidden-sm">{{$d->data->description}}</p>
                                         </div>
                                     </a>
                                     <div class="controls-more-inmo">
