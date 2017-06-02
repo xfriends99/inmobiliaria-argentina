@@ -23,6 +23,45 @@ class AuthController extends Controller
         $this->users = $users;
     }
 
+    public function getLogin()
+    {
+        if (Auth::check()){
+            return redirect()->route('dashboard');
+        }
+
+        return view('admin.login');
+    }
+
+    /**
+     * Handle a login request to the application.
+     *
+     * @param LoginRequest $request
+     * @return \Illuminate\Http\Response
+     */
+    public function postLogin(LoginRequest $request)
+    {
+        $credentials = $this->getCredentials($request);
+
+        if (! Auth::validate($credentials)) {
+            /*
+                        if ($throttles) {
+                            $this->incrementLoginAttempts($request);
+                        }*/
+
+            return redirect()->back()->withErrors('Credenciales invalidas');
+        }
+
+        $user = Auth::getProvider()->retrieveByCredentials($credentials);
+
+        Auth::login($user, true);
+        if($user->role=='admin'){
+            return redirect()->route('dashboard');
+        } else {
+            return redirect()->route('home');
+        }
+    }
+
+
     /**
      * Show the application login form Front End.
      *
@@ -126,9 +165,18 @@ class AuthController extends Controller
 
     public function getLogout()
     {
+        if (!Auth::check()){
+            return redirect()->route('signin.admin');
+        }
+        $user = Auth::user()->role;
+
         Auth::logout();
 
-        return redirect()->route('signin');
+        if($user=='admin'){
+            return redirect()->route('signin.admin');
+        } else {
+            return redirect()->route('signin');
+        }
     }
 
 

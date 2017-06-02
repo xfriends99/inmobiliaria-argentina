@@ -40,9 +40,15 @@
                         <section>
                             <div class="search-results-controls clearfix">
                                 <div class="pull-left">
-                                    <a href="{{route('search')}}?@foreach($request->all() as $k => $r){{$k.'='.$r.'&'}}@endforeach" class="circle-icon active"><i class="fa fa-th"></i></a>
-                                    <a href="{{route('search')}}?ord=row&@foreach($request->all() as $k => $r){{$k.'='.$r.'&'}}@endforeach" class="circle-icon"><i class="fa fa-bars"></i></a>
-                                    <a href="{{route('search')}}?ord=map&@foreach($request->all() as $k => $r){{$k.'='.$r.'&'}}@endforeach" class="circle-icon hidden-xs hidden-sm"><i class="fa fa-map-marker"></i></a>
+                                    <?php
+                                    $url = '';
+                                    foreach($request->all() as $k => $r){
+                                        $url .= $k.'='.$r.'&';
+                                    }
+                                    ?>
+                                    <a href="{{route('search')}}?{{$url}}" class="circle-icon active"><i class="fa fa-th"></i></a>
+                                    <a href="{{route('search')}}?ord=row&{{$url}}" class="circle-icon"><i class="fa fa-bars"></i></a>
+                                    <a href="{{route('search')}}?ord=map&{{$url}}" class="circle-icon hidden-xs hidden-sm"><i class="fa fa-map-marker"></i></a>
                                 </div>
 
                                 <div class="pull-right">
@@ -66,7 +72,7 @@
                                         <div class="item" data-id="{{$d->data->id}}">
                                             <a href="{{route('propiedad', $d->data->id)}}">
                                                 <div class="description description-grid">
-                                                    <div class="label label-default">Operación</div>
+                                                    <div class="label label-default">{{$d->data->operations[0]->operation_type}}</div>
                                                     <div class="label label-default bg-green">Apto Crédito</div>
                                                     <h3>{{$d->data->publication_title}}</h3>
                                                     <address><i class="fa fa-map-marker"></i> {{$d->data->address}}</address>
@@ -92,25 +98,69 @@
                                 <nav aria-label="Page navigation">
                                     <ul class="pagination">
                                         <li class="@if($tokko_search->get_current_page()<=1){{"disabled"}}@endif previous">
-                                            <a href="@if($tokko_search->get_current_page()<=1){{"#"}}@else{{route('search')}}?@foreach($request->all() as $k => $r) @if($k!='page'){{$k.'='.$r.'&'}}@endif @endforeach{{'page='.($tokko_search->get_current_page()-1).'&'}}@endif" aria-label="Previous">
+                                            <?php
+                                                if($tokko_search->get_current_page()<=1){
+                                                    $url = "#";
+                                                }else{
+                                                    $url = route('search').'?';
+                                                    foreach($request->all() as $k => $r){
+                                                        if($k!='page'){
+                                                            $url .= $k.'='.$r.'&';
+                                                        }
+                                                    }
+                                                    $url .= 'page='.($tokko_search->get_current_page()-1).'&';
+                                                }
+                                            ?>
+                                            <a href="{{$url}}" aria-label="Previous">
                                                 <i class="arrow_left"></i>
                                             </a>
                                         </li>
                                         @for($i = $tokko_search->get_current_page() - 4; $i<$tokko_search->get_current_page();$i=$i+1)
                                             @if($i>=1)
-                                                <li><a href="{{route('search')}}?@foreach($request->all() as $k => $r) @if($k!='page'){{$k.'='.$r.'&'}}@endif @endforeach{{'page='.$i.'&'}}">{{$i}}</a></li>
+                                                <?php
+                                                $url = '';
+                                                foreach ($request->all() as $k => $r){
+                                                    if($k!='page'){
+                                                        $url .=$k.'='.$r.'&';
+                                                    }
+                                                }
+                                                $url .= 'page='.$i.'&';
+                                                ?>
+                                                <li><a href="{{route('search')}}?{{$url}}">{{$i}}</a></li>
                                             @endif
                                         @endfor
                                         <li class="active"><a href="{{route('search')}}?@foreach($request->all() as $k => $r) @if($k!='page'){{$k.'='.$r.'&'}}@else{{$k.'='.$tokko_search->get_current_page().'&'}}@endif @endforeach">{{$tokko_search->get_current_page()}}</a></li>
                                         <?php $adelante = 1 ?>
                                         @for($i = $tokko_search->get_current_page()+1; $i<=$tokko_search->get_current_page()+4;$i=$i+1)
                                             @if($i<=$tokko_search->get_result_page_count())
-                                                <li><a href="{{route('search')}}?@foreach($request->all() as $k => $r) @if($k!='page'){{$k.'='.$r.'&'}}@endif @endforeach{{'page='.$i.'&'}}">{{$i}}</a></li>
+                                                <?php
+                                                    $url = '';
+                                                    foreach ($request->all() as $k => $r){
+                                                        if($k!='page'){
+                                                            $url .=$k.'='.$r.'&';
+                                                        }
+                                                    }
+                                                    $url .= 'page='.$i.'&';
+                                                ?>
+                                                <li><a href="{{route('search')}}?{{$url}}">{{$i}}</a></li>
                                             @endif
                                             <?php $adelante++; ?>
                                         @endfor
                                         <li class="@if($tokko_search->get_current_page()>=$tokko_search->get_result_page_count()){{"disabled"}}@endif next">
-                                            <a href="@if($tokko_search->get_current_page()>=$tokko_search->get_result_page_count()){{"#"}}@else{{route('search')}}?@foreach($request->all() as $k => $r) @if($k!='page'){{$k.'='.$r.'&'}}@endif @endforeach{{'page='.($tokko_search->get_current_page()+1).'&'}}@endif" aria-label="Next">
+                                            <?php
+                                            if($tokko_search->get_current_page()>=$tokko_search->get_result_page_count()){
+                                                $url = "#";
+                                            }else{
+                                                $url = route('search').'?';
+                                                foreach($request->all() as $k => $r){
+                                                    if($k!='page'){
+                                                        $url .= $k.'='.$r.'&';
+                                                    }
+                                                }
+                                                $url .= 'page='.($tokko_search->get_current_page()+1).'&';
+                                            }
+                                            ?>
+                                            <a href="{{$url}}" aria-label="Next">
                                                 <i class="arrow_right"></i>
                                             </a>
                                         </li>
@@ -137,8 +187,17 @@
            });
 
            $('.sort-search').change(function(){
-              var url = "{{route('search')}}?@foreach($request->all() as $k => $r) @if($k!='orden'){{$k.'='.$r.'&'}}@endif @endforeach";
-              location.replace(url+'orden='+$(this).val());
+               var url = '{{route("search")}}?';
+               <?php
+                   $url = route('search')."?";
+                   foreach($request->all() as $k => $r){
+                        if($k!='orden' && $k!='page'){
+                            echo "url += '".$k."=".$r."&"."';";
+                        }
+                   }
+               ?>
+               url = url+"orden="+$(this).val();
+               location.replace(url);
            });
         });
     </script>

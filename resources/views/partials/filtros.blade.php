@@ -5,14 +5,38 @@
         <ul class="tags">
             @foreach($request->all() as $key => $value)
                 @if($value!='')
-                    @if($key!='operacion' && $key!='propiedad' && $key!='orden' && $key!='page')
-                        <li>{{$value}} <a href="{{route('search')}}?@foreach($request->all() as $kk => $rr) @if($kk!=$key){{$kk.'='.$rr.'&'}}@endif @endforeach"><i class="fa fa-close"></i></a></li>
+                    @if($key!='operacion' && $key!='propiedad' && $key!='orden' && $key!='page' && $key!='ord')
+                        <?php
+                        $url = '';
+                        foreach($request->all() as $kk => $rr){
+                            if($kk!=$key){
+                                $url .= $kk.'='.$rr.'&';
+                            }
+                        };
+                        ?>
+                        <li>{{$value}} <a href="{{route('search')}}?{{$url}}"><i class="fa fa-close"></i></a></li>
                     @else
                         @if($key=='operacion')
-                            <li>{{$tokko_search->get_operation_name($value)}} <a href="{{route('search')}}?@foreach($request->all() as $kk => $rr) @if($kk!='operacion'){{$kk.'='.$rr.'&'}}@endif @endforeach"><i class="fa fa-close"></i></a></li>
+                            <?php
+                            $url = '';
+                            foreach($request->all() as $kk => $rr){
+                                if($kk!='operacion'){
+                                    $url .= $kk.'='.$rr.'&';
+                                }
+                            };
+                            ?>
+                            <li>{{$tokko_search->get_operation_name($value)}} <a href="{{route('search')}}?{{$url}}"><i class="fa fa-close"></i></a></li>
                         @elseif($key=='propiedad')
-                            <li>{{$data_properties[$value]}} <a href="{{route('search')}}?@foreach($request->all() as $kk => $rr) @if($kk!='propiedad'){{$kk.'='.$rr.'&'}}@endif @endforeach"><i class="fa fa-close"></i></a></li>
-                        @else
+                            <?php
+                            $url = '';
+                            foreach($request->all() as $kk => $rr){
+                                if($kk!='propiedad'){
+                                    $url .= $kk.'='.$rr.'&';
+                                }
+                            };
+                            ?>
+                            <li>{{$data_properties[$value]}} <a href="{{route('search')}}?{{$url}}"><i class="fa fa-close"></i></a></li>
+                        @elseif($key=='orden')
                             <li>
                                 @if($value==1)
                                     {{"Menor precio"}}
@@ -21,7 +45,15 @@
                                 @else
                                     {{"Más recientes"}}
                                 @endif
-                                <a href="{{route('search')}}?@foreach($request->all() as $kk => $rr) @if($kk!='orden'){{$kk.'='.$rr.'&'}}@endif @endforeach"><i class="fa fa-close"></i></a></li>
+                                    <?php
+                                    $url = '';
+                                    foreach($request->all() as $kk => $rr){
+                                        if($kk!='orden'){
+                                            $url .= $kk.'='.$rr.'&';
+                                        }
+                                    };
+                                    ?>
+                                <a href="{{route('search')}}?{{$url}}"><i class="fa fa-close"></i></a></li>
                         @endif
                     @endif
                 @endif

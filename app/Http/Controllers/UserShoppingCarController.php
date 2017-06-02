@@ -19,6 +19,9 @@ class UserShoppingCarController extends Controller
 
     public function index()
     {
+        if (!Auth::check()){
+            return redirect()->route('signin');
+        }
         $properties = $this->shoppingCar->search(['user_id' => Auth::user()->id])->get();
         $auth = new TokkoAuth(env('API_KEY'));
         $data = [];

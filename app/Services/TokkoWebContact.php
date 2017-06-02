@@ -28,7 +28,8 @@ class TokkoWebContact
        $status = curl_getinfo($curl, CURLINFO_HTTP_CODE);
        curl_close($curl);
        if ( $status != 201 ) {
-         die($json_response);
+         return false;
+           //die($json_response);
        }
 
        return json_decode($json_response, true);

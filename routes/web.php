@@ -74,3 +74,67 @@ Route::get('/thankyou', [
     'as' => 'thankyou',
     'uses' => 'HomeController@thankyou'
 ]);
+
+//Admin users
+
+Route::get('/admin/signin', [
+    'as' => 'signin.admin',
+    'uses' => 'Auth\AuthController@getLogin'
+]);
+
+Route::post('/admin/login', [
+    'as' => 'login.admin',
+    'uses' => 'Auth\AuthController@postLogin'
+]);
+
+Route::get('/admin', [
+    'as' => 'dashboard',
+    'uses' => 'DashboardController@index',
+    'middleware' => ['auth']
+]);
+
+Route::get('users', [
+    'as' => 'user.index',
+    'uses' => 'UserController@index',
+    'middleware' => ['auth']
+]);
+
+Route::get('users/{id}/show', [
+    'as' => 'user.show',
+    'uses' => 'UserController@show',
+    'middleware' => ['auth']
+]);
+
+Route::delete('users/{id}/delete', [
+    'as' => 'user.delete',
+    'uses' => 'UserController@delete',
+    'middleware' => ['auth']
+]);
+
+Route::get('users/create', [
+    'as' => 'user.create',
+    'uses' => 'UserController@create',
+    'middleware' => ['auth']
+]);
+
+Route::post('users/store', [
+    'as' => 'user.store',
+    'uses' => 'UserController@store',
+    'middleware' => ['auth']
+]);
+
+Route::get('users/{id}/edit', [
+    'as' => 'user.edit',
+    'uses' => 'UserController@edit',
+    'middleware' => ['auth']
+]);
+
+Route::put('users/{id}/update', [
+    'as' => 'user.update',
+    'uses' => 'UserController@update',
+    'middleware' => ['auth']
+]);
+
+Route::get('/login', function(){
+   return redirect()->route('signin.admin');
+});

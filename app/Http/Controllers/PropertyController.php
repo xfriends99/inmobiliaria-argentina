@@ -27,7 +27,11 @@ class PropertyController extends Controller
             abort(404);
         }
         $data = (array) $property->data;
-        $property_user = $this->shoppingCar->search(['property_id' => $id, 'user_id' => Auth::user()->id])->get()->first();
+        if (Auth::check()){
+            $property_user = $this->shoppingCar->search(['property_id' => $id, 'user_id' => Auth::user()->id])->get()->first();
+        } else {
+            $property_user = false;
+        }
         return view('frontend.propiedad', compact('data', 'property', 'property_user'));
     }
 
@@ -43,7 +47,10 @@ class PropertyController extends Controller
                  'properties' => [$id]];
         $contact = new TokkoWebContact($auth, $data);
         try{
-            $contact->send();
+            $response = $contact->send();
+            if(!$response){
+                return redirect()->back()->withErrors('Ocurrio un error intente de nuevo');
+            }
             return redirect()->route('thankyou');
         } catch(\Exception $e){
             return redirect()->back()->withErrors('Ocurrio un error intente de nuevo');

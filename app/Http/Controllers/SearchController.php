@@ -21,7 +21,7 @@ class SearchController extends Controller
         if(isset($request->operacion) && $request->operacion!=''){
             $operacion = '['.$request->operacion.']';
         } else {
-            $operacion = '[1,2]';
+            $operacion = '[1,2,3]';
         }
 
         if(isset($request->keyword) && $request->keyword!=''){
@@ -53,7 +53,10 @@ class SearchController extends Controller
         } else {
             $tokko_search->do_search(null, $order_by, $orden);
         }
-
+        /*$tokko = $tokko_search;
+        $tokko->do_search_all(1000, $order_by, $orden);
+        $filtros = $this->getFilterData($tokko->get_properties());
+        return dd($filtros);*/
         $properties = $tokko_search->get_properties();
         $data_properties = [];
         $tokko_properties = new TokkoPropertyTypes($auth);
@@ -64,12 +67,19 @@ class SearchController extends Controller
         /*foreach($properties as $p){
             dd($p->data);
         }*/
+        $map = false;
         if(isset($request->ord) && $request->ord=='row'){
-            return view('frontend.search_row', compact('properties', 'tokko_search', 'request'));
+            return view('frontend.search_row', compact('properties', 'tokko_search', 'request', 'data_properties', 'tokko_search_form', 'map'));
         } else if(isset($request->ord) && $request->ord=='map'){
-            return view('frontend.search_map', compact('properties', 'tokko_search', 'request'));
+            $map = true;
+            return view('frontend.search_map', compact('properties', 'tokko_search', 'request', 'data_properties', 'tokko_search_form', 'map'));
         } else {
-            return view('frontend.search', compact('properties', 'tokko_search', 'request', 'data_properties', 'tokko_search_form'));
+            return view('frontend.search', compact('properties', 'tokko_search', 'request', 'data_properties', 'tokko_search_form', 'map'));
         }
+    }
+
+    public function getFilterData($data)
+    {
+        return $data;
     }
 }
