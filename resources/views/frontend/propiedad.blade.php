@@ -30,7 +30,15 @@
                             <div class="pull-left">
                                 <h1>{{$data['publication_title']}}</h1>
                                 <h3 class="display-inline">Precio de venta <strong>{{$property->get_available_prices()[0]}}</strong></h3>
-                                <div class="label label-default bg-green padding-5px display-inline">Apto Crédito</div>
+                                <?php
+                                $array = [];
+                                foreach ($data['tags'] as $tag){
+                                    $array[] = $tag->id;
+                                }
+                                ?>
+                                @if(in_array(1528, $array))
+                                    <div class="label label-default bg-green padding-5px display-inline">Apto Crédito</div>
+                                @endif
                             </div>
                             @if(Auth::check() && !$property_user)
                                 <form method="POST" action="{{route('carrito.add', $data['id'])}}">
@@ -82,11 +90,12 @@
                                         <dd>{{$data['parking_lot_amount']}}</dd>
                                     </dl>
                                 </section>
-
-                                <section class="box hidden-xs">
-                                    <h2>Recorré la propiedad</h2>
-                                    <iframe src="https://www.google.com/maps/embed/v1/streetview?key=AIzaSyASbXb64d2fKwT3rdqqCvZYmq4jCdFDtIQ&location={{$data['geo_lat']}},{{$data['geo_long']}}" width="100%" height="360" frameborder="0" style="border:0" allowfullscreen></iframe>
-                                </section>
+                                @if(isset($data['geo_lat']) && isset($data['geo_long']))
+                                    <section class="box hidden-xs">
+                                        <h2>Recorré la propiedad</h2>
+                                        <iframe src="https://www.google.com/maps/embed/v1/streetview?key=AIzaSyASbXb64d2fKwT3rdqqCvZYmq4jCdFDtIQ&location={{$data['geo_lat']}},{{$data['geo_long']}}" width="100%" height="360" frameborder="0" style="border:0" allowfullscreen></iframe>
+                                    </section>
+                                @endif
                             </div>
                             <!--end col-md-6-->
                             <div class="col-md-4 col-sm-12">
@@ -103,7 +112,7 @@
                                         </section>
                                     </div>
                                 </section>
-
+                                @if(count($data['tags'])>0)
                                 <section>
                                     <h2>Amenities</h2>
                                     <ul class="tags">
@@ -112,10 +121,12 @@
                                         @endforeach
                                     </ul>
                                 </section>
+                                @endif
+                                <!--
                                 <section>
                                     <h2>Compartir</h2>
                                     <div class="social-share"></div>
-                                </section>
+                                </section>-->
                             </div>
                         </div>
                     </div>
@@ -124,12 +135,13 @@
                         <aside class="sidebar box">
                             <section>
                                 <h2>Agendá una visita</h2>
-                                <div class="element"><img src="/assets/img/logo-2.png" alt=""></div>
-                                @if($data['branch']!=null)
-                                    <h3>Teléfono: <a href="tel:+54{{$data['branch']->phone}}">{{$data['branch']->phone}}</a></h3>
+                                @if(isset($data['company']))
+                                    <div class="element"><img src="{{$data['company']->logo}}" alt="" style="width:100px;"></div>
                                 @endif
+                                <!--<h3> <!--<a href="tel:+54"></a></h3>-->
                                 <form class="form inputs-underline" method="POST" action="{{route('propiedad.contacto', $data['id'])}}">
                                     {{csrf_field()}}
+                                    <input type="hidden" name="key" value="{{$data['company']->key}}">
                                     <div class="form-group">
                                         <input type="text" @if(Auth::check()) readonly value="{{Auth::user()->name}}" @endif class="form-control" name="name" placeholder="Nombre">
                                     </div>
@@ -157,13 +169,15 @@
 @stop
 
 @section('scripts')
-    <script>
-        rating(".visitor-rating");
-        var _latitude = "{{$data['geo_lat']}}";
-        var _longitude = "{{$data['geo_long']}}";
-        var element = "map-detail";
-        simpleMap(_latitude,_longitude, element);
-    </script>
+    @if(isset($data['geo_lat']) && isset($data['geo_long']))
+        <script>
+            rating(".visitor-rating");
+            var _latitude = "{{$data['geo_lat']}}";
+            var _longitude = "{{$data['geo_long']}}";
+            var element = "map-detail";
+            simpleMap(_latitude,_longitude, element);
+        </script>
+    @endif
 
     <script>
         $("#share").jsSocials({

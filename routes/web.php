@@ -135,6 +135,11 @@ Route::put('users/{id}/update', [
     'middleware' => ['auth']
 ]);
 
+Route::get('quicksearch', [
+    'as' => 'quicksearch',
+    'uses' => 'SearchController@quicksearch'
+]);
+
 Route::get('/login', function(){
    return redirect()->route('signin.admin');
 });

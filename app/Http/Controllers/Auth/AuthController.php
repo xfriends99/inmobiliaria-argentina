@@ -216,7 +216,7 @@ class AuthController extends Controller
     {
         // Add the user to database
         $user = $this->users->create(array_merge(
-            $request->only('email', 'phone', 'password', 'name', 'last_name')
+            $request->only('email', 'phone', 'password', 'name', 'last_name'), ['role' => 'user']
         ));
 
         Auth::login($user, true);

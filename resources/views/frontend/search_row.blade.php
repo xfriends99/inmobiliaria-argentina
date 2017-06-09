@@ -72,7 +72,7 @@
                                 <div class="item item-row" data-id="{{$d->data->id}}" data-latitude="{{$d->data->geo_lat}}" data-longitude="{{$d->data->geo_long}}">
                                     <a href="{{route('propiedad', $d->data->id)}}">
                                         <div class="image bg-transfer">
-                                            <figure>{{$d->data->room_amount}} ambientes</figure>
+                                            <figure>{{number_format(round($d->data->surface), 0, ',', '.')}} M2</figure>
                                             @if(isset($d->data->photos[0]))
                                                 <img src="{{$d->data->photos[0]->image}}" alt="">
                                             @endif
@@ -80,14 +80,24 @@
                                         <div class="map hidden-xs hidden-sm"></div>
                                         <div class="description description-row">
                                             <div class="label label-default">{{$d->data->operations[0]->operation_type}}</div>
-                                            <div class="label label-default bg-green text-white">Apto Crédito</div>
+                                            <?php
+                                            $array = [];
+                                            foreach ($d->data->tags as $tag){
+                                                $array[] = $tag->id;
+                                            }
+                                            ?>
+                                            @if(in_array(1528, $array))
+                                                <div class="label label-default bg-green">Apto Crédito</div>
+                                            @endif
                                             <h3>{{$d->data->publication_title}}</h3>
-                                            <address class="hidden-sm"><i class="fa fa-map-marker"></i> {{$d->data->address}}</address>
-                                            <p class="hidden-xs hidden-sm">{{$d->data->description}}</p>
+                                            <address class="hidden-sm"><i class="fa fa-map-marker"></i> {{$d->data->location->name}}</address>
+                                            <p class="hidden-xs hidden-sm">{{substr($d->data->description, 0 , 200)}}</p>
                                         </div>
                                     </a>
                                     <div class="controls-more-inmo">
-                                        <div class="element"><img src="http://www.redplataforma.com.ar/img/logo-light.png" alt=""></div>
+                                        @if(isset($d->data->company))
+                                            <div class="element"><img src="{{$d->data->company->logo}}" alt=""></div>
+                                        @endif
                                     </div>
                                     <div class="controls-more-pricing">
                                         <h6>{{$d->get_available_prices()[0]}}</h6>
@@ -189,6 +199,28 @@
 @section('scripts')
     <script>
         $(document).ready(function(){
+            $('#send_precio').click(function(){
+                if($('#preciodesde').val()!='' || $('#preciohasta').val()!='') {
+                    var url = '{{route("search")}}?';
+                    <?php
+                        foreach ($request->all() as $kk => $rr) {
+                            if ($kk != 'preciodesde' && $kk != 'preciohasta') {
+                                echo "url += '" . $kk . "=" . $rr . "&" . "';";
+                            }
+                        };
+                        ?>
+                    if ($('#preciodesde').val() != '') {
+                        url += 'preciodesde=' + $('#preciodesde').val() + '&';
+                    }
+                    if ($('#preciohasta').val() != '') {
+                        url += 'preciohasta=' + $('#preciohasta').val();
+                    }
+                    if($('#preciodesde').val()=='' || $('#preciohasta').val()=='' || $('#preciohasta').val()>$('#preciodesde').val()){
+                        location.href = url;
+                    }
+                }
+            });
+
             $('.disabled').click(function(e){
                 e.preventDefault();
             });

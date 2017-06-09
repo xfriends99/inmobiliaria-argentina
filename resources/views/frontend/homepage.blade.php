@@ -33,24 +33,30 @@
                                     <div class="col-md-2 col-sm-6">
                                         <div class="form-group">
                                             <select class="form-control selectpicker" name="operacion">
+                                                <option value="" selected>Seleccione</option>
                                                 <option value="1">Venta</option>
-                                                <option value="2">Alquilar</option>
-                                                <option value="2">Alquilar Temporalmente</option>
+                                                <option value="2">Alquiler</option>
+                                                <option value="2">Alquiler Temporalmente</option>
                                             </select>
                                         </div>
                                     </div>
                                     <div class="col-md-2 col-sm-6">
                                         <div class="form-group">
                                             <select class="form-control selectpicker" name="propiedad">
-                                                @foreach($tokko_properties as $property)
-                                                <option value="{{$property->id}}">{{$property->name}}</option>
-                                                @endforeach
+                                                <option value="" selected>Seleccione</option>
+                                                <option value="3">Casa</option>
+                                                <option value="10">Cochera</option>
+                                                <option value="2">Departamento</option>
+                                                <option value="7">Local</option>
+                                                <option value="1">Terreno</option>
                                             </select>
                                         </div>
                                     </div>
                                     <div class="col-md-7 col-sm-8">
-                                        <div class="form-group">
-                                            <input type="text" class="form-control" name="keyword" placeholder="Buscá por lugar, dirección o inmobiliaria">
+                                        <div class="form-group full-relative">
+                                            <input type="text" class="form-control typeaheadd" autocomplete="off" placeholder="Buscá por lugar, dirección o inmobiliaria">
+                                            <input type="hidden" name="keyword" id="typea">
+                                            <div class="typeahead-search" style="display:none;"><ul></ul></div>
                                         </div>
                                     </div>
                                     <div class="col-md-1 col-sm-4">
@@ -83,15 +89,26 @@
 
                 <div class="row">
                     <!--PROPIEDAD-->
+                    <?php
+                    $i = 1;
+                    ?>
                     @foreach($properties as $d)
-                        <div class="col-md-3 col-sm-3">
+                        <div @if($i==3 || $i==4) class="col-md-6 col-sm-6" @else class="col-md-3 col-sm-3" @endif>
                             <div class="item" data-id="{{$d->data->id}}">
                                 <a href="{{route('propiedad', $d->data->id)}}">
                                     <div class="description description-grid">
-                                        <div class="label label-default">Operación</div>
-                                        <div class="label label-default bg-green">Apto Crédito</div>
+                                        <div class="label label-default">{{$d->data->operations[0]->operation_type}}</div>
+                                        <?php
+                                        $array = [];
+                                        foreach ($d->data->tags as $tag){
+                                            $array[] = $tag->id;
+                                        }
+                                        ?>
+                                        @if(in_array(1528, $array))
+                                            <div class="label label-default bg-green">Apto Crédito</div>
+                                        @endif
                                         <h3>{{$d->data->publication_title}}</h3>
-                                        <address><i class="fa fa-map-marker"></i> {{$d->data->address}}</address>
+                                        <address><i class="fa fa-map-marker"></i> {{$d->data->location->name}}</address>
                                     </div>
                                     <div class="image bg-transfer">
                                         @if(isset($d->data->photos[0]))
@@ -100,11 +117,14 @@
                                     </div>
                                 </a>
                                 <div class="additional-info">
-                                    <div class="rating-passive"><span class="reviews">{{$d->data->room_amount}} ambientes</span></div>
+                                    <div class="rating-passive"><span class="reviews">{{number_format(round($d->data->surface), 0, ',', '.')}} M2</span></div>
                                     <div class="controls-more"><a href="#">{{$d->get_available_prices()[0]}}</a></div>
                                 </div>
                             </div>
                         </div>
+                        <?php
+                        $i++;
+                        ?>
                     @endforeach
                     <!--PROPIEDAD-->
                 </div>
@@ -122,5 +142,43 @@
 @stop
 
 @section('scripts')
+    <script>
+        $(document).ready(function(){
+            $('.typeaheadd').keyup(function(){
+                if($(this).val()=='' || $(this).val().length<3){
+                    $('.typeahead-search').hide();
+                    $('#typea').val('');
+                } else {
+                    $('.typeahead-search').hide();
+                    var val = $(this).val();
+                    $.ajax({
+                        method: "GET",
+                        url: "{{route('quicksearch')}}?search="+val,
+                        success: function(response){
+                            var html = '';
+                            for(var i = 0; i<response.length;i++){
+                                html += "<li class='typeahead-search-item' val="+response[i].id+">"+response[i].name+"</li>";
+                            }
+                            $('.typeahead-search ul').html(html);
+                            $('.typeahead-search').show();
+                        }
+                    })
+                }
+            });
 
+            $('body').on('click', '.typeahead-search-item', function(){
+                console.log($(this).attr('val'));
+                $('.typeahead-search').hide();
+                $('#typea').val($(this).attr('val'));
+                $('.typeaheadd').val($(this).html());
+            });
+            /*$('.typeahead').typeahead({
+                source: function (typeahead, query) {
+                    $.get('/quicksearch', { query: query }, function (data) {
+                        return typeahead.process(data);
+                    });
+                }
+            });*/
+        });
+    </script>
 @stop

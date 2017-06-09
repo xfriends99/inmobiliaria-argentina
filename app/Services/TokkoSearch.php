@@ -8,6 +8,7 @@ class TokkoSearch
     var $BASE_SEARCH_URL = 'http://tokkobroker.com/api/v1/property/search/?';
     var $BASE_GEO_URL = 'http://tokkobroker.com/api/v1/property/geo_data/?';
     var $BASE_BY_LOCATION_URL = 'http://tokkobroker.com/api/v1/property/by_location/?';
+    var $BASE_SEARCH_SUMMARY = 'http://tokkobroker.com/api/v1/property/get_search_summary/?';
     var $auth = null;
     var $querystring_data_key = "data";
     var $querystring_page_key = "page";
@@ -28,6 +29,7 @@ class TokkoSearch
     var $geo_data = null;
     var $search_results = null;
     var $properties_by_location = null;
+    var $summary = null;
 
     function get_geo_data(){
         if ($this->search_data == null){
@@ -215,6 +217,82 @@ class TokkoSearch
                 echo "Error executing query.";
             }
         }
+    }
+
+    function get_summary(){
+        if ($this->search_data == null){
+            echo "No search parameters were given";
+        }else{
+            try {
+                $url = $this->BASE_SEARCH_SUMMARY . "&format=". $this->results_format ."&key=". $this->auth->key ."&lang=". $this->auth->get_language() . "&offset=" . $this->get_search_offset() . "&data=" . json_encode($this->search_data);
+                $cp = curl_init();
+                curl_setopt($cp, CURLOPT_RETURNTRANSFER, 1);
+                curl_setopt($cp, CURLOPT_URL, $url);
+                curl_setopt($cp, CURLOPT_TIMEOUT, 60);
+                $this->summary = json_decode(curl_exec($cp));
+                curl_close($cp);
+            } catch (Exception $e) {
+                $this->summary = null;
+                echo "Error executing query.";
+            }
+        }
+    }
+
+    function get_summary_field($field){
+        if ($this->summary == null){
+            $this->get_summary();
+        }
+        try{
+            if(isset($this->summary->objects->$field)){
+                return $this->summary->objects->$field;
+            } else {
+                return [];
+            }
+        }catch (Exception $e) {
+            echo "Invalid field";
+        }
+    }
+
+    function get_summary_tags_by_type($type){
+        if ($this->summary == null){
+            $this->get_summary();
+        }
+
+        $tag_list = array();
+        foreach ( $this->summary->objects->tags as $tag){
+            if ($tag->tag_type == $type){
+                array_push($tag_list, $tag);
+            }
+        }
+        return $tag_list;
+    }
+
+    function get_summary_total_surface(){
+        if ($this->summary == null){
+            $this->get_summary();
+        }
+
+        $total_surfaces = array();
+        if(isset($this->summary->objects->total_surface)) {
+            foreach ($this->summary->objects->total_surface as $total_surface) {
+                $array = array();
+                $array["count"] = $total_surface->count;
+                $range = explode(":", $total_surface->range);
+                $text = array();
+                if ($range[0]) {
+                    array_push($text, "Desde " . $range[0] . " m2");
+                }
+
+                if ($range[1]) {
+                    array_push($text, "Hasta " . $range[1] . " m2");
+                }
+
+                $array["range"] = implode(" ", $text);
+                $array["value"] = $total_surface->range;
+                array_push($total_surfaces, $array);
+            }
+        }
+        return $total_surfaces;
     }
 
     function do_search_page($page, $limit=null, $order_by=null, $order=null){

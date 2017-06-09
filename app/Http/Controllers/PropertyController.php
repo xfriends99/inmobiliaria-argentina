@@ -37,7 +37,7 @@ class PropertyController extends Controller
 
     public function contact(ContactRequest $request, $id)
     {
-        $auth = new TokkoAuth(env('API_KEY'));
+        $auth = new TokkoAuth($request->key);
         $data = ['name' => $request->name,
                  'cellphone' => $request->phone,
                  'phone' => $request->phone,

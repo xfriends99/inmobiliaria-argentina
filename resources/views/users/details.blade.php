@@ -35,7 +35,13 @@
            </tr>
            <tr>
                <th>Rol:</th>
-               <td>{{ ucwords($user->role)}}</td>
+               <td>
+                   @if($user->role=='admin')
+                       {{'Admininstrador'}}
+                   @else
+                       {{'Usuario'}}
+                   @endif
+                </td>
            </tr>
        </table>
    </div><br><br><br>

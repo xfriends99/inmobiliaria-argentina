@@ -49,14 +49,14 @@
                             </div>
                         </div>
                         <div class="hero-section full-screen has-map has-sidebar margin-top-15px">
-                            <div id="map" style="height: 360px; width: 100%;"></div>
+                            <div id="map" style="height: 100%; width: 100%;"></div>
 <!--                        <iframe src="https://www.google.com/maps/embed/v1/place?key=AIzaSyASbXb64d2fKwT3rdqqCvZYmq4jCdFDtIQ&q={{$properties[0]->data->location->full_location}}" width="100%" height="360" frameborder="0" style="border:0" allowfullscreen></iframe>-->
                         </div>
                     </div>
                     <section>
                         <div class="center">
                             <nav aria-label="Page navigation">
-                                <ul class="pagination" style="margin: 50px 0 !important;">
+                                <ul class="pagination" >
                                     <li class="@if($tokko_search->get_current_page()<=1){{"disabled"}}@endif previous">
                                         <?php
                                         if($tokko_search->get_current_page()<=1){
@@ -140,6 +140,28 @@
 @section('scripts')
     <script>
         $(document).ready(function(){
+            $('#send_precio').click(function(){
+                if($('#preciodesde').val()!='' || $('#preciohasta').val()!='') {
+                    var url = '{{route("search")}}?';
+                    <?php
+                        foreach ($request->all() as $kk => $rr) {
+                            if ($kk != 'preciodesde' && $kk != 'preciohasta') {
+                                echo "url += '" . $kk . "=" . $rr . "&" . "';";
+                            }
+                        };
+                        ?>
+                    if ($('#preciodesde').val() != '') {
+                        url += 'preciodesde=' + $('#preciodesde').val() + '&';
+                    }
+                    if ($('#preciohasta').val() != '') {
+                        url += 'preciohasta=' + $('#preciohasta').val();
+                    }
+                    if($('#preciodesde').val()=='' || $('#preciohasta').val()=='' || $('#preciohasta').val()>$('#preciodesde').val()){
+                        location.href = url;
+                    }
+                }
+            });
+
             $('.disabled').click(function(e){
                 e.preventDefault();
             });

@@ -73,9 +73,17 @@
                                             <a href="{{route('propiedad', $d->data->id)}}">
                                                 <div class="description description-grid">
                                                     <div class="label label-default">{{$d->data->operations[0]->operation_type}}</div>
-                                                    <div class="label label-default bg-green">Apto Crédito</div>
+                                                    <?php
+                                                    $array = [];
+                                                    foreach ($d->data->tags as $tag){
+                                                        $array[] = $tag->id;
+                                                    }
+                                                    ?>
+                                                    @if(in_array(1528, $array))
+                                                        <div class="label label-default bg-green">Apto Crédito</div>
+                                                    @endif
                                                     <h3>{{$d->data->publication_title}}</h3>
-                                                    <address><i class="fa fa-map-marker"></i> {{$d->data->address}}</address>
+                                                    <address><i class="fa fa-map-marker"></i> {{$d->data->location->name}}</address>
                                                 </div>
                                                 <div class="image bg-transfer">
                                                     @if(isset($d->data->photos[0]))
@@ -84,7 +92,7 @@
                                                 </div>
                                             </a>
                                             <div class="additional-info">
-                                                <div class="rating-passive"><span class="reviews">{{$d->data->room_amount}} ambientes</span></div>
+                                                <div class="rating-passive"><span class="reviews">{{number_format(round($d->data->surface), 0, ',', '.')}} M2</span></div>
                                                 <div class="controls-more"><a href="#">{{$d->get_available_prices()[0]}}</a></div>
                                             </div>
                                         </div>
@@ -182,6 +190,28 @@
 @section('scripts')
     <script>
         $(document).ready(function(){
+            $('#send_precio').click(function(){
+                if($('#preciodesde').val()!='' || $('#preciohasta').val()!='') {
+                    var url = '{{route("search")}}?';
+                    <?php
+                        foreach ($request->all() as $kk => $rr) {
+                            if ($kk != 'preciodesde' && $kk != 'preciohasta') {
+                                echo "url += '" . $kk . "=" . $rr . "&" . "';";
+                            }
+                        };
+                        ?>
+                    if ($('#preciodesde').val() != '') {
+                        url += 'preciodesde=' + $('#preciodesde').val() + '&';
+                    }
+                    if ($('#preciohasta').val() != '') {
+                        url += 'preciohasta=' + $('#preciohasta').val();
+                    }
+                    if($('#preciodesde').val()=='' || $('#preciohasta').val()=='' || $('#preciohasta').val()>$('#preciodesde').val()){
+                        location.href = url;
+                    }
+                }
+            });
+
            $('.disabled').click(function(e){
              e.preventDefault();
            });
