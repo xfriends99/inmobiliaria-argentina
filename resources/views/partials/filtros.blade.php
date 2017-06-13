@@ -306,7 +306,11 @@
                                     $url .= 'parking_lot_amount='.$parking->amount.'&';
 
                                     ?>
-                                    <li><a href="{{route('search')}}?{{$url}}">{{$parking->amount}} Cocheras ({{$parking->count}})</a></li>
+                                    @if($parking->amount==0)
+                                        <li><a href="{{route('search')}}?{{$url}}">Sin Cochera ({{$parking->count}})</a></li>
+                                    @else
+                                        <li><a href="{{route('search')}}?{{$url}}">{{$parking->amount}} Cocheras ({{$parking->count}})</a></li>
+                                    @endif
                                 @endforeach
                             </ul>
                         </div>

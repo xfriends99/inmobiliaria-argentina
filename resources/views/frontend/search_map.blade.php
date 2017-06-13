@@ -52,6 +52,52 @@
                             <div id="map" style="height: 100%; width: 100%;"></div>
 <!--                        <iframe src="https://www.google.com/maps/embed/v1/place?key=AIzaSyASbXb64d2fKwT3rdqqCvZYmq4jCdFDtIQ&q={{$properties[0]->data->location->full_location}}" width="100%" height="360" frameborder="0" style="border:0" allowfullscreen></iframe>-->
                         </div>
+                        <section>
+                            <!--PROPIEDAD-->
+                            @foreach($properties as $d)
+                                <div class="item item-row properties-map" style="display:none;" id="property-{{$d->data->id}}" data-id="{{$d->data->id}}" data-latitude="{{$d->data->geo_lat}}" data-longitude="{{$d->data->geo_long}}">
+                                    <a href="{{route('propiedad', $d->data->id)}}" >
+                                        <div class="image bg-transfer" @if(isset($d->data->photos[0])) style="background-image: url('{{$d->data->photos[0]->image}}')" @else style="background-image: url('/img-default.jpg')" @endif>
+                                            <figure>
+                                                @if(number_format(round($d->data->surface), 0, ',', '.')!='0')
+                                                    {{number_format(round($d->data->surface), 0, ',', '.')}} M2
+                                                @endif
+                                            </figure>
+                                            @if(isset($d->data->photos[0]))
+                                                <img src="{{$d->data->photos[0]->image}}" alt="">
+                                            @else
+                                                <img src="/img-default.jpg" alt="">
+                                            @endif
+                                        </div>
+                                        <div class="map hidden-xs hidden-sm hidden-md hidden-lg"></div>
+                                        <div class="description description-row">
+                                            <div class="label label-default">{{$d->data->operations[0]->operation_type}}</div>
+                                            <?php
+                                            $array = [];
+                                            foreach ($d->data->tags as $tag){
+                                                $array[] = $tag->id;
+                                            }
+                                            ?>
+                                            @if(in_array(1528, $array))
+                                                <div class="label label-default bg-green">Apto Crédito</div>
+                                            @endif
+                                            <h3>{{$d->data->publication_title}}</h3>
+                                            <address class="hidden-sm"><i class="fa fa-map-marker"></i> {{$d->data->location->name}}</address>
+                                            <p class="hidden-xs hidden-sm">{{substr($d->data->description, 0 , 200)}}</p>
+                                        </div>
+                                    </a>
+                                    <div class="controls-more-inmo">
+                                        @if(isset($d->data->company))
+                                            <div class="element"><img src="{{$d->data->company->logo}}" alt=""></div>
+                                        @endif
+                                    </div>
+                                    <div class="controls-more-pricing">
+                                        <h6>{{$d->get_available_prices()[0]}}</h6>
+                                    </div>
+                                </div>
+                        @endforeach
+                        <!--PROPIEDAD-->
+                        </section>
                     </div>
                     <section>
                         <div class="center">
@@ -156,7 +202,7 @@
                     if ($('#preciohasta').val() != '') {
                         url += 'preciohasta=' + $('#preciohasta').val();
                     }
-                    if($('#preciodesde').val()=='' || $('#preciohasta').val()=='' || $('#preciohasta').val()>$('#preciodesde').val()){
+                    if($('#preciodesde').val()=='' || $('#preciohasta').val()=='' || parseInt($('#preciohasta').val())>parseInt($('#preciodesde').val())){
                         location.href = url;
                     }
                 }
@@ -191,6 +237,14 @@
                     position: {lat:{{$d->data->geo_lat}}, lng: {{$d->data->geo_long}}},
                     map: map,
                     title: "{{$d->data->publication_title}}"
+                });
+
+                marker.addListener('click', function() {
+                    var id = "{{$d->data->id}}";
+                    map.setCenter(marker.getPosition());
+                    console.log(id);
+                    $('.properties-map').hide();
+                    $('#property-'+id).slideDown('slow');
                 });
             @endforeach
         }

@@ -88,11 +88,19 @@
                                                 <div class="image bg-transfer">
                                                     @if(isset($d->data->photos[0]))
                                                         <img src="{{$d->data->photos[0]->image}}" alt="">
+                                                    @else
+                                                        <img src="/img-default.jpg" alt="">
                                                     @endif
                                                 </div>
                                             </a>
                                             <div class="additional-info">
-                                                <div class="rating-passive"><span class="reviews">{{number_format(round($d->data->surface), 0, ',', '.')}} M2</span></div>
+                                                <div class="rating-passive"><span class="reviews">
+                                                        @if(number_format(round($d->data->surface), 0, ',', '.')!='0')
+                                                            {{number_format(round($d->data->surface), 0, ',', '.')}} M2
+                                                        @else
+                                                            <br>
+                                                        @endif
+                                                    </span></div>
                                                 <div class="controls-more"><a href="#">{{$d->get_available_prices()[0]}}</a></div>
                                             </div>
                                         </div>
@@ -206,7 +214,7 @@
                     if ($('#preciohasta').val() != '') {
                         url += 'preciohasta=' + $('#preciohasta').val();
                     }
-                    if($('#preciodesde').val()=='' || $('#preciohasta').val()=='' || $('#preciohasta').val()>$('#preciodesde').val()){
+                    if($('#preciodesde').val()=='' || $('#preciohasta').val()=='' || parseInt($('#preciohasta').val())>parseInt($('#preciodesde').val())){
                         location.href = url;
                     }
                 }

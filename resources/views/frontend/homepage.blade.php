@@ -33,9 +33,8 @@
                                     <div class="col-md-2 col-sm-6">
                                         <div class="form-group">
                                             <select class="form-control selectpicker" name="operacion">
-                                                <option value="" selected>Seleccione</option>
                                                 <option value="1">Venta</option>
-                                                <option value="2">Alquiler</option>
+                                                <option value="2" selected>Alquiler</option>
                                                 <option value="2">Alquiler Temporalmente</option>
                                             </select>
                                         </div>
@@ -43,10 +42,9 @@
                                     <div class="col-md-2 col-sm-6">
                                         <div class="form-group">
                                             <select class="form-control selectpicker" name="propiedad">
-                                                <option value="" selected>Seleccione</option>
                                                 <option value="3">Casa</option>
                                                 <option value="10">Cochera</option>
-                                                <option value="2">Departamento</option>
+                                                <option value="2" selected>Departamento</option>
                                                 <option value="7">Local</option>
                                                 <option value="1">Terreno</option>
                                             </select>
@@ -113,11 +111,19 @@
                                     <div class="image bg-transfer">
                                         @if(isset($d->data->photos[0]))
                                             <img src="{{$d->data->photos[0]->image}}" alt="">
+                                        @else
+                                            <img src="/img-default.jpg" alt="">
                                         @endif
                                     </div>
                                 </a>
                                 <div class="additional-info">
-                                    <div class="rating-passive"><span class="reviews">{{number_format(round($d->data->surface), 0, ',', '.')}} M2</span></div>
+                                    <div class="rating-passive"><span class="reviews">
+                                            @if(number_format(round($d->data->surface), 0, ',', '.')!='0')
+                                                {{number_format(round($d->data->surface), 0, ',', '.')}} M2
+                                            @else
+                                                <br>
+                                            @endif
+                                            </span></div>
                                     <div class="controls-more"><a href="#">{{$d->get_available_prices()[0]}}</a></div>
                                 </div>
                             </div>

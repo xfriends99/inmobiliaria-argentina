@@ -90,7 +90,7 @@ class SearchController extends Controller
         $locations = $tokko_search->get_summary_field('locations');
         $operations = $tokko_search->get_summary_field('operation_types');
         $total_surfaces = $tokko_search->get_summary_total_surface();
-        $tags = $tokko_search->get_summary_field('tags');
+        $tags = $this->order_tags($tokko_search->get_summary_field('tags'));
         $tags_name = [];
         foreach($tags as $ta){
             $tags_name[$ta->tag_id] = $ta->tag_name;
@@ -130,5 +130,22 @@ class SearchController extends Controller
             $response[] = ['id' => $d->id, 'name' => $d->full_location];
         }
         return $response;
+    }
+
+    public function order_tags($tags)
+    {
+        $sort = [];
+        $data = [];
+        $response = [];
+        foreach($tags as $t){
+            $sort[] = $t->tag_name;
+            $data[$t->tag_name] = $t;
+        }
+        asort($sort);
+        foreach ($sort as $s){
+            $response[] = $data[$s];
+        }
+        return $response;
+
     }
 }

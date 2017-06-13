@@ -72,9 +72,15 @@
                                 <div class="item item-row" data-id="{{$d->data->id}}" data-latitude="{{$d->data->geo_lat}}" data-longitude="{{$d->data->geo_long}}">
                                     <a href="{{route('propiedad', $d->data->id)}}">
                                         <div class="image bg-transfer">
-                                            <figure>{{number_format(round($d->data->surface), 0, ',', '.')}} M2</figure>
+                                            <figure>
+                                                @if(number_format(round($d->data->surface), 0, ',', '.')!='0')
+                                                    {{number_format(round($d->data->surface), 0, ',', '.')}} M2
+                                                @endif
+                                            </figure>
                                             @if(isset($d->data->photos[0]))
                                                 <img src="{{$d->data->photos[0]->image}}" alt="">
+                                            @else
+                                                <img src="/img-default.jpg" alt="">
                                             @endif
                                         </div>
                                         <div class="map hidden-xs hidden-sm"></div>
@@ -215,7 +221,7 @@
                     if ($('#preciohasta').val() != '') {
                         url += 'preciohasta=' + $('#preciohasta').val();
                     }
-                    if($('#preciodesde').val()=='' || $('#preciohasta').val()=='' || $('#preciohasta').val()>$('#preciodesde').val()){
+                    if($('#preciodesde').val()=='' || $('#preciohasta').val()=='' || parseInt($('#preciohasta').val())>parseInt($('#preciodesde').val())){
                         location.href = url;
                     }
                 }

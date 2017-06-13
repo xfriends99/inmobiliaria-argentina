@@ -52,9 +52,9 @@
 <script type="text/javascript" src="{{ asset('assets/js/jquery-migrate-1.2.1.min.js') }}"></script>
 <script type="text/javascript" src="{{ asset('assets/bootstrap/js/bootstrap.min.js') }}"></script>
 <script type="text/javascript" src="{{ asset('assets/js/bootstrap-select.min.js') }}"></script>
-@if(!isset($map) || $map==false)
+
 <script type="text/javascript" src="http://maps.google.com/maps/api/js?key=AIzaSyBEDfNcQRmKQEyulDN8nGWjLYPm8s4YB58&libraries=places"></script>
-@endif
+
 <script type="text/javascript" src="{{ asset('assets/js/icheck.min.js') }}"></script>
 <script type="text/javascript" src="{{ asset('assets/js/richmarker-compiled.js') }}"></script>
 <script type="text/javascript" src="{{ asset('assets/js/jquery.trackpad-scroll-emulator.min.js') }}"></script>

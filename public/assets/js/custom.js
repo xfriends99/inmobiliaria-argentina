@@ -425,9 +425,9 @@ function ratingPassive(element){
 function socialShare(){
     var socialButtonsEnabled = 1;
     if ( socialButtonsEnabled == 1 ){
-        $('head').append( $('<link rel="stylesheet" type="text/css">').attr('href', 'assets/css/jssocials.css') );
-        $('head').append( $('<link rel="stylesheet" type="text/css">').attr('href', 'assets/css/jssocials-theme-minima.css') );
-        $.getScript( "assets/js/jssocials.min.js", function( data, textStatus, jqxhr ) {
+        $('head').append( $('<link rel="stylesheet" type="text/css">').attr('href', '/assets/css/jssocials.css') );
+        $('head').append( $('<link rel="stylesheet" type="text/css">').attr('href', '/assets/css/jssocials-theme-minima.css') );
+        $.getScript( "/assets/js/jssocials.min.js", function( data, textStatus, jqxhr ) {
             $(".social-share").jsSocials({
                 shares: ["twitter", "facebook", "googleplus", "linkedin", "pinterest"]
             });

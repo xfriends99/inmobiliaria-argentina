@@ -64,6 +64,11 @@
                                                     <div class="bg-transfer"><img src="{{$photo->image}}" title="{{$photo->description}}" alt=""></div>
                                                 </div>
                                             @endforeach
+                                            @if(count($data['photos'])<=0)
+                                                <div class="image">
+                                                    <div class="bg-transfer"><img src="/img-default.jpg" alt=""></div>
+                                                </div>
+                                            @endif
                                         </div>
                                     </div>
                                 </section>
@@ -122,11 +127,10 @@
                                     </ul>
                                 </section>
                                 @endif
-                                <!--
                                 <section>
                                     <h2>Compartir</h2>
                                     <div class="social-share"></div>
-                                </section>-->
+                                </section>
                             </div>
                         </div>
                     </div>
