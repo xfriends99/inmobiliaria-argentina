@@ -5470,7 +5470,7 @@ section:not(.block) h2 {
   z-index: 1;
   display: block;
 }
-.subject-list img{width:100%;}
+.subject-list img{width:100%; max-height: 200px;}
 
 .subject-list .description section {
   padding: 10px 20px;
@@ -7815,4 +7815,75 @@ button.btn.btn-framed.btn-light-frame{width:auto;background-color:#fff;}
   background: #2b9ddd;
   color: white;
   cursor: pointer;
+}
+.color-azul{
+  color:#2b9ddd;
+}
+
+.iCheck-helper{
+  z-index: 100;
+  cursor: pointer;
+}
+/*
+.dropdown-menu.open{
+  position: relative !important;
+  z-index: 100 !important;
+}*/
+
+.iradio {
+  display: inline-block;
+  *display: inline;
+  vertical-align: middle;
+  margin: 0;
+  padding: 0;
+  width: 20px;
+  height: 20px;
+  -moz-box-shadow: inset 0px 0px 0px 2px #e8e8e8;
+  -webkit-box-shadow: inset 0px 0px 0px 2px #e8e8e8;
+  box-shadow: inset 0px 0px 0px 2px #e8e8e8;
+  background-color: #fff;
+  border: none;
+  cursor: pointer;
+  border-radius: 20px;
+}
+
+.iradio {
+  background-position: -88px 0;
+}
+.iradio {
+  background-position: -110px 0;
+}
+.iradio {
+  background-position: -132px 0;
+  cursor: default;
+}
+.iradio {
+  background-position: -154px 0;
+}
+
+.iradio:after {
+  -moz-transition: 0.3s;
+  -webkit-transition: 0.3s;
+  transition: 0.3s;
+  filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=0);
+  opacity: 0;
+  text-shadow: none;
+  -webkit-font-smoothing: antialiased;
+  font-family: 'fontawesome';
+  speak: none;
+  font-weight: normal;
+  font-variant: normal;
+  line-height: 1;
+  text-transform: none;
+  color: #1f1f1f;
+  content: "\f00c";
+  position: absolute;
+  line-height: 20px;
+  font-size: 10px;
+  left: 5.5px;
+}
+
+.iradio.checked:after {
+  filter: progid:DXImageTransform.Microsoft.Alpha(enabled=false);
+  opacity: 1;
 }

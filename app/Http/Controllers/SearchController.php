@@ -10,7 +10,7 @@ use Illuminate\Http\Request;
 
 class SearchController extends Controller
 {
-    public function index(Request $request)
+    public function index(Request $request, $ord = null)
     {
         if(isset($request->propiedad) && $request->propiedad!=''){
             $property_types = '['.$request->propiedad.']';
@@ -25,23 +25,27 @@ class SearchController extends Controller
         }
         //dd($operacion);
         if(isset($request->keyword) && $request->keyword!=''){
-            $data = '["location", "=", "'.$request->keyword.'"]';
+            $current_localization_id = '['.$request->keyword.']';
+            $current_localization_type = 'division';
         } else {
-            $data = '';
+            $current_localization_id = '1';
+            $current_localization_type = 'country';
         }
+        $data = '';
+        $surfaces = '';
         if(isset($request->surfaces) && $request->surfaces!=''){
-            $data .= ($data!='') ? ',' : '';
-            if(substr($request->surfaces, -1) == ':'){
-                $data .= '["total_surface",">",'.substr($request->surfaces, 0, strlen($request->surfaces)-1).']';
-            } else if(substr($request->surfaces, 0, 1) == ':'){
-                $data .= '["total_surface","<",'.substr($request->surfaces, 1).']';
+            $data = ($data!='') ? ',' : '';
+            $surfaces_details =  $this->getSurfaces($request->surfaces);
+            if(!$surfaces_details){
+                $request['surfaces'] = '';
+                $data .= '';
             } else {
-                $da = explode(':', $request->surfaces);
-                $data .= '["total_surface",">",'.$da[0].'],["total_surface","<",'.$da[1].']';
+                $surfaces = $surfaces_details['details'];
+                $data .= $surfaces_details['filter'];
             }
         }
         if(isset($request->parking_lot_amount) && $request->parking_lot_amount!=''){
-            $data .= ($data!='') ? ',' : '';
+            $data = ($data!='') ? ',' : '';
             $data .= '["parking_lot_amount","=",'.$request->parking_lot_amount.']';
         }
         if(isset($request->tags) && $request->tags!=''){
@@ -59,9 +63,8 @@ class SearchController extends Controller
         } else {
             $price_to = '';
         }
-        $example_data = '{"current_localization_id":0,"current_localization_type":"country","price_from":"'.$price_from.'","price_to":"'.$price_to.'","operation_types":'.$operacion.',
+        $example_data = '{"current_localization_id":'.$current_localization_id.',"current_localization_type":"'.$current_localization_type.'","price_from":"'.$price_from.'","price_to":"'.$price_to.'","operation_types":'.$operacion.',
         "property_types":'.$property_types.',"currency":"ANY","filters":['.$data.'],"with_tags":['.$tags.']}';
-        //return $example_data;
         $auth = new TokkoAuth(env('API_KEY'));
         $tokko_search = new TokkoSearch($auth, $example_data);
         $orden = null;
@@ -78,7 +81,7 @@ class SearchController extends Controller
                 $order_by = 'id';
             }
         }
-        if(isset($request->ord) && $request->ord=='row'){
+        if($ord!=null && $ord=='row'){
             $tokko_search->default_page_limit = 15;
         }
         if(isset($request->page)){
@@ -86,19 +89,12 @@ class SearchController extends Controller
         } else {
             $tokko_search->do_search(null, $order_by, $orden);
         }
-        //dd($tokko_search->get_summary_field('operation_types'));
-        $locations = $tokko_search->get_summary_field('locations');
-        $operations = $tokko_search->get_summary_field('operation_types');
-        $total_surfaces = $tokko_search->get_summary_total_surface();
-        $tags = $this->order_tags($tokko_search->get_summary_field('tags'));
-        $tags_name = [];
-        foreach($tags as $ta){
-            $tags_name[$ta->tag_id] = $ta->tag_name;
-        }
-        /*
-        if(isset($request->keyword)){
-            $request['keyword'] = $locations[0]->location_name;
-        }*/
+        $data_filter = $this->getFilterData();
+        $locations = $data_filter['locations'];
+        $operations = $data_filter['operations'];
+        $total_surfaces = $data_filter['total_surfaces'];
+        $parkings = $data_filter['parking'];
+        $tags = $this->order_tags($data_filter['tags']);
         $properties = $tokko_search->get_properties();
         $data_properties = [];
         $tokko_properties = new TokkoPropertyTypes($auth);
@@ -106,17 +102,17 @@ class SearchController extends Controller
             $data_properties[$p->id.''] = $p->name;
         }
         $tokko_search_form = new TokkoSearchForm($auth);
-        /*foreach($properties as $p){
-            dd($p->data);
-        }*/
         $map = false;
-        if(isset($request->ord) && $request->ord=='row'){
-            return view('frontend.search_row', compact('tags_name', 'tags', 'total_surfaces', 'operations', 'locations', 'properties', 'tokko_search', 'request', 'data_properties', 'tokko_search_form', 'map'));
-        } else if(isset($request->ord) && $request->ord=='map'){
+        if($ord!=null && $ord=='row'){
+            $search = route('search', 'row');
+            return view('frontend.search_row', compact('search', 'ord', 'surfaces', 'parkings', 'tags', 'total_surfaces', 'operations', 'locations', 'properties', 'tokko_search', 'request', 'data_properties', 'tokko_search_form', 'map'));
+        } else if($ord!=null && $ord=='map'){
+            $search = route('search', 'map');
             $map = true;
-            return view('frontend.search_map', compact('tags_name', 'tags', 'total_surfaces', 'operations', 'locations', 'properties', 'tokko_search', 'request', 'data_properties', 'tokko_search_form', 'map'));
+            return view('frontend.search_map', compact('search', 'ord', 'surfaces', 'parkings', 'tags', 'total_surfaces', 'operations', 'locations', 'properties', 'tokko_search', 'request', 'data_properties', 'tokko_search_form', 'map'));
         } else {
-            return view('frontend.search', compact('tags_name', 'tags', 'total_surfaces', 'operations', 'locations', 'properties', 'tokko_search', 'request', 'data_properties', 'tokko_search_form', 'map'));
+            $search = route('search');
+            return view('frontend.search', compact('search', 'ord', 'surfaces', 'parkings', 'tags', 'total_surfaces', 'operations', 'locations', 'properties', 'tokko_search', 'request', 'data_properties', 'tokko_search_form', 'map'));
         }
     }
 
@@ -146,6 +142,90 @@ class SearchController extends Controller
             $response[] = $data[$s];
         }
         return $response;
+
+    }
+
+    public function getFilterData()
+    {
+        $example_data = '{"current_localization_id":0,"current_localization_type":"country","price_from":"","price_to":"","operation_types":[1,2,3],
+        "property_types":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25],"currency":"ANY","filters":[]}';
+        $auth = new TokkoAuth(env('API_KEY'));
+        $tokko_search = new TokkoSearch($auth, $example_data);
+        $tokko_search->do_search(null, null, null);
+        $locations_name = [];
+        $locations = $tokko_search->get_summary_field('locations');
+        foreach($locations as $locat){
+            $locations_name[$locat->location_id] = $locat;
+        }
+        $operations = $tokko_search->get_summary_field('operation_types');
+        $parking = $tokko_search->get_summary_field('parking_lot_amount');
+        $total_surfaces = $tokko_search->get_summary_total_surface();
+        $tags = $this->order_tags($tokko_search->get_summary_field('tags'));
+        $tags_name = [];
+        foreach($tags as $ta){
+            $tags_name[$ta->tag_id] = $ta;
+        }
+        return ['locations' => $locations_name, 'operations' => $operations, 'total_surfaces' => $total_surfaces,
+        'tags' => $tags_name, 'parking' => $parking];
+    }
+
+    public function getSurfaces($surfaces)
+    {
+        try{
+            $surf = explode(',', $surfaces);
+            $menor = ['num' => 0, 'logic' => '>'];
+            $mayor = ['num' => 0, 'logic' => '>'];
+            foreach($surf as $s){
+                if(substr($s, -1) == ':'){
+                    if($menor['num']==0 || substr($s, 0, strlen($s)-1)<$menor['num']){
+                        $menor['num'] = substr($s, 0, strlen($s)-1);
+                        $menor['logic'] = '>';
+                    }
+                    if(substr($s, 0, strlen($s)-1)>$mayor['num']){
+                        $mayor['num'] = substr($s, 0, strlen($s)-1);
+                        $mayor['logic'] = '>';
+                    }
+                } else if(substr($s, 0, 1) == ':'){
+                    if($menor['num']==0 || substr($s, 1)<$menor['num']){
+                        $menor['num'] = substr($s, 1);
+                        $menor['logic'] = '<';
+                    }
+                    if(substr($s, 1)>$mayor['num']){
+                        $mayor['num'] = substr($s, 1);
+                        $mayor['logic'] = '<';
+                    }
+                } else {
+                    $da = explode(':', $s);
+                    if($menor['num']==0 || $da[0]<$menor['num']){
+                        $menor['num'] = $da[0];
+                        $menor['logic'] = '>';
+                    }
+                    if($da[1]>$mayor['num']){
+                        $mayor['num'] = $da[1];
+                        $mayor['logic'] = '<';
+                    }
+                }
+            }
+            if($mayor['num']<=$menor['num']){
+                $filters = '["total_surface","'.$menor['logic'].'",'.$menor['num'].']';
+                if($menor['logic']=='<'){
+                    $details = ':'.$menor['num'];
+                } else {
+                    $details = $menor['num'].':';
+                }
+            } else {
+                if($mayor['logic']=='<'){
+                    $filters = '["total_surface",">",'.$menor['num'].'],["total_surface","<",'.$mayor['num'].']';
+                    $details = $menor['num'].':'.$mayor['num'];
+                } else {
+                    $filters = '["total_surface",">",'.$menor['num'].']';
+                    $details = $menor['num'].':';
+                }
+            }
+            return ['details' => $details, 'filter' => $filters];
+        } catch(\Exception $e){
+            return false;
+        }
 
     }
 }

@@ -14,7 +14,7 @@
                             }
                         };
                         ?>
-                        <li>{{$value}} <a href="{{route('search')}}?{{$url}}"><i class="fa fa-close"></i></a></li>
+                        <li>{{$value}} <a href="{{$search}}?{{$url}}"><i class="fa fa-close"></i></a></li>
                     @else
                         @if($key=='operacion')
                             <?php
@@ -24,8 +24,21 @@
                                     $url .= $kk.'='.$rr.'&';
                                 }
                             };
+                            $tagss = explode(',', $request->operacion);
+                            foreach($tagss as $ta){
+                            if(preg_match('/,'.$ta.'/', $request->operacion)){
+                                $o = ''.str_replace(','.$ta,'', $request->operacion);
+                            } else if(preg_match('/'.$ta.',/', $request->operacion)){
+                                $o = str_replace($ta.',','', $request->operacion);
+                            } else {
+                                $o = str_replace($ta,'', $request->operacion);
+                            }
+                            $url = $url.'operacion='.$o.'&';
                             ?>
-                            <li>{{$tokko_search->get_operation_name($value)}} <a href="{{route('search')}}?{{$url}}"><i class="fa fa-close"></i></a></li>
+                            <li>{{$tokko_search->get_operation_name($ta)}} <a href="{{$search}}?{{$url}}"><i class="fa fa-close"></i></a></li>
+                            <?php
+                            }
+                            ?>
                         @elseif($key=='propiedad')
                             <?php
                             $url = '';
@@ -34,8 +47,21 @@
                                     $url .= $kk.'='.$rr.'&';
                                 }
                             };
+                            $tagss = explode(',', $request->propiedad);
+                            foreach($tagss as $ta){
+                            if(preg_match('/,'.$ta.'/', $request->propiedad)){
+                                $o = ''.str_replace(','.$ta,'', $request->propiedad);
+                            } else if(preg_match('/'.$ta.',/', $request->propiedad)){
+                                $o = str_replace($ta.',','', $request->propiedad);
+                            } else {
+                                $o = str_replace($ta,'', $request->propiedad);
+                            }
+                            $url = $url.'propiedad='.$o.'&';
                             ?>
-                            <li>{{$data_properties[$value]}} <a href="{{route('search')}}?{{$url}}"><i class="fa fa-close"></i></a></li>
+                            <li>{{$data_properties[$ta]}} <a href="{{$search}}?{{$url}}"><i class="fa fa-close"></i></a></li>
+                            <?php
+                            }
+                            ?>
                         @elseif($key=='orden')
                             <li>
                                 @if($value==1)
@@ -53,8 +79,8 @@
                                         }
                                     };
                                     ?>
-                                <a href="{{route('search')}}?{{$url}}"><i class="fa fa-close"></i></a></li>
-                        @elseif($key=='surfaces')
+                                <a href="{{$search}}?{{$url}}"><i class="fa fa-close"></i></a></li>
+                        @elseif($key=='surfaces' && $request->surfaces!='')
                             <?php
                                 $url = '';
                                 foreach($request->all() as $kk => $rr){
@@ -62,16 +88,16 @@
                                         $url .= $kk.'='.$rr.'&';
                                     }
                                 };
-                                if(substr($request->surfaces, -1) == ':'){
-                                    $val = "Desde ".substr($request->surfaces, 0, strlen($request->surfaces)-1)." m2";
-                                } else if(substr($request->surfaces, 0, 1) == ':'){
-                                    $val = "Hasta ".substr($request->surfaces, 1)." m2";
+                                if(substr($surfaces, -1) == ':'){
+                                    $val = "Desde ".substr($surfaces, 0, strlen($surfaces)-1)." m2";
+                                } else if(substr($surfaces, 0, 1) == ':'){
+                                    $val = "Hasta ".substr($surfaces, 1)." m2";
                                 } else {
-                                    $da = explode(':', $request->surfaces);
+                                    $da = explode(':', $surfaces);
                                     $val = "Desde ".$da[0]." m2 Hasta ".$da[1]." m2";
                                 }
                             ?>
-                            <li>{{$val}} <a href="{{route('search')}}?{{$url}}"><i class="fa fa-close"></i></a></li>
+                            <li>{{$val}} <a href="{{$search}}?{{$url}}"><i class="fa fa-close"></i></a></li>
                         @elseif($key=='parking_lot_amount')
                             <?php
                             $url = '';
@@ -81,7 +107,11 @@
                                 }
                             };
                             ?>
-                            <li>{{$value}} Cocheras <a href="{{route('search')}}?{{$url}}"><i class="fa fa-close"></i></a></li>
+                            @if($value==0)
+                                <li>Sin Cocheras <a href="{{$search}}?{{$url}}"><i class="fa fa-close"></i></a></li>
+                            @else
+                                <li>{{$value}} Cocheras <a href="{{$search}}?{{$url}}"><i class="fa fa-close"></i></a></li>
+                            @endif
                         @elseif($key=='tags')
                             <?php
                             $url = '';
@@ -101,20 +131,33 @@
                                 }
                                 $url = $url.'tags='.$o.'&';
                                 ?>
-                                <li>{{$tags_name[$ta]}} <a href="{{route('search')}}?{{$url}}"><i class="fa fa-close"></i></a></li>
+                                <li>{{$tags[$ta]->tag_name}} <a href="{{$search}}?{{$url}}"><i class="fa fa-close"></i></a></li>
                             <?php
                             }
                             ?>
-                        @elseif($key=='keyword' && isset($locations[0]))
+                        @elseif($key=='keyword')
                             <?php
-                                $url = '';
-                                foreach($request->all() as $kk => $rr){
-                                    if($kk!='keyword'){
-                                        $url .= $kk.'='.$rr.'&';
-                                    }
+                            $url = '';
+                            foreach($request->all() as $kk => $rr){
+                                if($kk!='keyword'){
+                                    $url .= $kk.'='.$rr.'&';
                                 }
+                            };
+                            $tagss = explode(',', $request->keyword);
+                            foreach($tagss as $ta){
+                                if(preg_match('/,'.$ta.'/', $request->keyword)){
+                                    $o = ''.str_replace(','.$ta,'', $request->keyword);
+                                } else if(preg_match('/'.$ta.',/', $request->keyword)){
+                                    $o = str_replace($ta.',','', $request->keyword);
+                                } else {
+                                    $o = str_replace($ta,'', $request->keyword);
+                                }
+                                $url = $url.'keyword='.$o.'&';
+                                ?>
+                                <li>{{$locations[$ta]->location_name}} <a href="{{$search}}?{{$url}}"><i class="fa fa-close"></i></a></li>
+                                <?php
+                            }
                             ?>
-                            <li>{{$locations[0]->location_name}} <a href="{{route('search')}}?{{$url}}"><i class="fa fa-close"></i></a></li>
                         @endif
                     @endif
                 @endif
@@ -135,17 +178,17 @@
                 <?php $precio.= ' Hasta $'.number_format($request->preciohasta, 0, ',', '.') ; ?>
             @endif
             @if($precio!='')
-                    <li>{{$precio}} <a href="{{route('search')}}?{{$url}}"><i class="fa fa-close"></i></a></li>
+                    <li>{{$precio}} <a href="{{$search}}?{{$url}}"><i class="fa fa-close"></i></a></li>
             @endif
         </ul>
         @endif
         @if($request->all())
         <div class="">
-            <h6><a href="{{route('search')}}">Eliminar todos los filtros</a></h6>
+            <h6><a href="{{$search}}">Eliminar todos los filtros</a></h6>
         </div>
         @endif
     </section>
-    <form class="form inputs-underline">
+    <form class="form inputs-underline" method="GET" >
         <div class="form-group">
             <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
                 <div class="panel panel-default">
@@ -159,17 +202,10 @@
                     <div id="Zona" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="Filtro1">
                         <ul class="padding-left-15px padding-right-15px scroll-y">
                             @foreach ($locations as $location)
-                                <?php
-                                $url = '';
-                                foreach($request->all() as $kk => $rr){
-                                    if($kk!='keyword'){
-                                        $url .= $kk.'='.$rr.'&';
-                                    }
-                                };
-                                $url .= 'keyword='.$location->location_id.'&';
-                                ?>
-                                <li><a href="{{route('search')}}?{{$url}}">{{$location->location_name}} ({{$location->count}})</a></li>
+                                <li><span class="color-azul">{{$location->location_name}} </span>
+                                    <input @if(isset($request->keyword) && preg_match('/'.$location->location_id.'/', $request->keyword)) checked @endif value="{{$location->location_id}}" type="checkbox" class="keyword"></li>
                             @endforeach
+                            <input type="hidden" @if(isset($request->keyword)) value="{{$request->keyword}}" @endif id="keyword" name="keyword">
                         </ul>
                     </div>
                 </div>
@@ -185,47 +221,38 @@
                         <ul class="padding-left-15px padding-right-15px">
                             <input @if(isset($request->preciodesde)) value="{{$request->preciodesde}}" @endif type="number" class="form-control display-inline width-45 margin-right-4" id="preciodesde" name="preciodesde" placeholder="Desde">
                             <input @if(isset($request->preciohasta)) value="{{$request->preciohasta}}" @endif type="number" class="form-control display-inline width-45 float-right" id="preciohasta" name="preciohasta" placeholder="Hasta">
-                            <button id="send_precio" type="button" class="btn btn-framed btn-light-frame padding-5px width-100">Aplicar precio<i class="fa fa-search"></i></button>
+                            <!--<button id="send_precio" type="button" class="btn btn-framed btn-light-frame padding-5px width-100">Aplicar precio<i class="fa fa-search"></i></button>-->
                         </ul>
                     </div>
                 </div>
-                @if(!isset($request->operacion))
                     <div class="panel panel-default">
                         <div class="panel-heading" role="tab" id="Filtro3">
                             <h4 class="panel-title">
-                                <a role="button" data-toggle="collapse" data-parent="#accordion" href="#Operacion" aria-expanded="true" aria-controls="Operacion">
+                                <a role="button" data-toggle="collapse" data-parent="#accordion" href="#ope" aria-expanded="true" aria-controls="Operacion">
                                     Tipo de Operación
                                 </a>
                             </h4>
                         </div>
-                        <div id="Operacion" class="panel-collapse collapse" role="tabpanel" aria-labelledby="Filtro3">
+                        <div id="ope" class="panel-collapse collapse" role="tabpanel" aria-labelledby="Filtro3">
                             <ul class="padding-left-15px padding-right-15px scroll-y">
                                 @foreach ($operations as $operation)
-                                    <?php
-                                    $url = '';
-                                    foreach($request->all() as $kk => $rr){
-                                        if($kk!='operacion'){
-                                            $url .= $kk.'='.$rr.'&';
-                                        }
-                                    }
-                                    $url .= 'operacion='.$operation->operation_type.'&';
-
-                                    ?>
                                     @if ($operation->operation_type==1)
-                                        <li><a href="{{route('search')}}?{{$url}}">Venta ({{$operation->count}})</a></li>
+                                        <li><span class="color-azul">Venta </span>
+                                            <input @if(isset($request->operacion) && preg_match('/'.$operation->operation_type.'/', $request->operacion)) checked @endif value="{{$operation->operation_type}}" type="checkbox" class="operacion"></li>
                                     @endif
                                     @if ($operation->operation_type==2)
-                                        <li><a href="{{route('search')}}?{{$url}}">Alquiler ({{$operation->count}})</a></li>
+                                        <li><span class="color-azul">Alquiler </span>
+                                            <input @if(isset($request->operacion) && preg_match('/'.$operation->operation_type.'/', $request->operacion)) checked @endif value="{{$operation->operation_type}}" type="checkbox" class="operacion"></li>
                                     @endif
                                     @if ($operation->operation_type==3)
-                                        <li><a href="{{route('search')}}?{{$url}}">Alquiler Temporario ({{$operation->count}})</a></li>
+                                        <li><span class="color-azul">Alquiler Temporario </span>
+                                            <input @if(isset($request->operacion) && preg_match('/'.$operation->operation_type.'/', $request->operacion)) checked @endif value="{{$operation->operation_type}}" type="checkbox" class="operacion"></li>
                                     @endif
                                 @endforeach
+                                <input type="hidden" @if(isset($request->operacion)) value="{{$request->operacion}}" @endif id="operacion" name="operacion">
                             </ul>
                         </div>
                     </div>
-                @endif
-                @if(!isset($request->surfaces))
                     <div class="panel panel-default">
                         <div class="panel-heading" role="tab" id="Filtro4">
                             <h4 class="panel-title">
@@ -237,22 +264,13 @@
                         <div id="Superficie" class="panel-collapse collapse" role="tabpanel" aria-labelledby="Filtro4">
                             <ul class="padding-left-15px padding-right-15px scroll-y">
                                 @foreach ($total_surfaces as $total_surface)
-                                    <?php
-                                    $url = '';
-                                    foreach($request->all() as $kk => $rr){
-                                        if($kk!='surfaces'){
-                                            $url .= $kk.'='.$rr.'&';
-                                        }
-                                    };
-                                    $url .= 'surfaces='.$total_surface['value'].'&';
-
-                                    ?>
-                                    <li><a href="{{route('search')}}?{{$url}}">{{$total_surface['range']}} ({{$total_surface['count']}})</a></li>
+                                    <li><span class="color-azul">{{$total_surface['range']}} </span>
+                                        <input @if(isset($request->surfaces) && preg_match('/'.$total_surface['value'].'/', $request->surfaces)) checked @endif value="{{$total_surface['value']}}" type="checkbox" class="surfaces"></li>
                                 @endforeach
+                                <input type="hidden" @if(isset($request->surfaces)) value="{{$request->surfaces}}" @endif id="surfaces" name="surfaces">
                             </ul>
                         </div>
                     </div>
-                @endif
                 <div class="panel panel-default">
                     <div class="panel-heading" role="tab" id="Filtro5">
                         <h4 class="panel-title">
@@ -262,29 +280,15 @@
                         </h4>
                     </div>
                     <div id="Ammenities" class="panel-collapse collapse" role="tabpanel" aria-labelledby="Filtro5">
-                        <ul class="padding-left-15px padding-right-15px scroll-y">
+                        <ul class="padding-left-15px scroll-y">
                             @foreach ($tags as $tag)
-                                @if(!preg_match('/'.$tag->tag_id.'/', $request->tags))
-                                    <?php
-                                    $url = '';
-                                    foreach($request->all() as $kk => $rr){
-                                        if($kk!='tags'){
-                                            $url .= $kk.'='.$rr.'&';
-                                        }
-                                    };
-                                    if(!isset($request->tags)){
-                                        $url .= 'tags='.$tag->tag_id.'&';
-                                    } else {
-                                        $url .= 'tags='.$request->tags.','.$tag->tag_id.'&';
-                                    }
-                                    ?>
-                                    <li><a href="{{route('search')}}?{{$url}}">{{$tag->tag_name}} ({{$tag->count}})</a></li>
-                                @endif
+                                <li><span class="color-azul">{{$tag->tag_name}} </span>
+                                    <input @if(isset($request->tags) && preg_match('/'.$tag->tag_id.'/', $request->tags)) checked @endif value="{{$tag->tag_id}}" type="checkbox" class="tags"></li>
                             @endforeach
+                            <input type="hidden" @if(isset($request->tags)) value="{{$request->tags}}" @endif id="tags" name="tags">
                         </ul>
                     </div>
                 </div>
-                @if(!isset($request->parking_lot_amount))
                     <div class="panel panel-default">
                         <div class="panel-heading" role="tab" id="Filtro6">
                             <h4 class="panel-title">
@@ -295,27 +299,22 @@
                         </div>
                         <div id="Cochera" class="panel-collapse collapse" role="tabpanel" aria-labelledby="Filtro6">
                             <ul class="padding-left-15px padding-right-15px scroll-y">
-                                @foreach ($tokko_search->get_summary_field('parking_lot_amount') as $parking)
-                                    <?php
-                                    $url = '';
-                                    foreach($request->all() as $kk => $rr){
-                                        if($kk!='parking_lot_amount'){
-                                            $url .= $kk.'='.$rr.'&';
-                                        }
-                                    };
-                                    $url .= 'parking_lot_amount='.$parking->amount.'&';
-
-                                    ?>
+                                @foreach ($parkings as $parking)
                                     @if($parking->amount==0)
-                                        <li><a href="{{route('search')}}?{{$url}}">Sin Cochera ({{$parking->count}})</a></li>
+                                        <li><span class="color-azul">Sin Cochera </span>
+                                            <input @if(isset($request->parking_lot_amount) && preg_match('/'.$parking->amount.'/', $request->parking_lot_amount)) checked @endif value="{{$parking->amount}}" name="parking_lot_amount" type="radio" class="parking_lot_amount"></li>
                                     @else
-                                        <li><a href="{{route('search')}}?{{$url}}">{{$parking->amount}} Cocheras ({{$parking->count}})</a></li>
+                                        <li><span class="color-azul">{{$parking->amount}} Cocheras </span>
+                                            <input @if(isset($request->parking_lot_amount) && preg_match('/'.$parking->amount.'/', $request->parking_lot_amount)) checked @endif value="{{$parking->amount}}" name="parking_lot_amount" type="radio" class="parking_lot_amount"></li>
                                     @endif
                                 @endforeach
+                                <input type="hidden" @if(isset($request->parking_lot_amount)) value="{{$request->parking_lot_amount}}" @endif id="parking_lot_amount" >
                             </ul>
                         </div>
                     </div>
-                @endif
+                <div class="col-md-12">
+                    <button type="submit" class="btn btn-danger btn-lg" id="buscar">Buscar</button>
+                </div>
             </div>
         </div>
     </form>

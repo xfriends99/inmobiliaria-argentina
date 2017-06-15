@@ -70,6 +70,11 @@ Route::get('/search', [
     'uses' => 'SearchController@index'
 ]);
 
+Route::get('/search/{ord?}', [
+    'as' => 'search',
+    'uses' => 'SearchController@index'
+]);
+
 Route::get('/thankyou', [
     'as' => 'thankyou',
     'uses' => 'HomeController@thankyou'

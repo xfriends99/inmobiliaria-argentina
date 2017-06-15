@@ -47,8 +47,8 @@
                                     }
                                     ?>
                                     <a href="{{route('search')}}?{{$url}}" class="circle-icon active"><i class="fa fa-th"></i></a>
-                                    <a href="{{route('search')}}?ord=row&{{$url}}" class="circle-icon"><i class="fa fa-bars"></i></a>
-                                    <a href="{{route('search')}}?ord=map&{{$url}}" class="circle-icon hidden-xs hidden-sm"><i class="fa fa-map-marker"></i></a>
+                                    <a href="{{route('search')}}/row?{{$url}}" class="circle-icon"><i class="fa fa-bars"></i></a>
+                                    <a href="{{route('search')}}/map?{{$url}}" class="circle-icon hidden-xs hidden-sm"><i class="fa fa-map-marker"></i></a>
                                 </div>
 
                                 <div class="pull-right">
@@ -72,7 +72,13 @@
                                         <div class="item" data-id="{{$d->data->id}}">
                                             <a href="{{route('propiedad', $d->data->id)}}">
                                                 <div class="description description-grid">
-                                                    <div class="label label-default">{{$d->data->operations[0]->operation_type}}</div>
+                                                    <div class="label label-default">
+                                                        <?php $pop = ''; ?>
+                                                        @foreach($d->data->operations as $ope)
+                                                            <?php $pop.= ($pop!='') ? ' - '.$ope->operation_type : $ope->operation_type; ?>
+                                                        @endforeach
+                                                        {{$pop}}
+                                                    </div>
                                                     <?php
                                                     $array = [];
                                                     foreach ($d->data->tags as $tag){
@@ -142,10 +148,10 @@
                                                 }
                                                 $url .= 'page='.$i.'&';
                                                 ?>
-                                                <li><a href="{{route('search')}}?{{$url}}">{{$i}}</a></li>
+                                                <li><a href="{{$search}}?{{$url}}">{{$i}}</a></li>
                                             @endif
                                         @endfor
-                                        <li class="active"><a href="{{route('search')}}?@foreach($request->all() as $k => $r) @if($k!='page'){{$k.'='.$r.'&'}}@else{{$k.'='.$tokko_search->get_current_page().'&'}}@endif @endforeach">{{$tokko_search->get_current_page()}}</a></li>
+                                        <li class="active"><a href="{{$search}}?@foreach($request->all() as $k => $r) @if($k!='page'){{$k.'='.$r.'&'}}@else{{$k.'='.$tokko_search->get_current_page().'&'}}@endif @endforeach">{{$tokko_search->get_current_page()}}</a></li>
                                         <?php $adelante = 1 ?>
                                         @for($i = $tokko_search->get_current_page()+1; $i<=$tokko_search->get_current_page()+4;$i=$i+1)
                                             @if($i<=$tokko_search->get_result_page_count())
@@ -158,7 +164,7 @@
                                                     }
                                                     $url .= 'page='.$i.'&';
                                                 ?>
-                                                <li><a href="{{route('search')}}?{{$url}}">{{$i}}</a></li>
+                                                <li><a href="{{$search}}?{{$url}}">{{$i}}</a></li>
                                             @endif
                                             <?php $adelante++; ?>
                                         @endfor
@@ -196,6 +202,7 @@
 @stop
 
 @section('scripts')
+    <script src="/assets/js/filtro.js"></script>
     <script>
         $(document).ready(function(){
             $('#send_precio').click(function(){
@@ -225,7 +232,11 @@
            });
 
            $('.sort-search').change(function(){
-               var url = '{{route("search")}}?';
+               @if($ord!=null)
+                   var url = '{{route("search")}}/{{$ord}}?';
+               @else
+                   var url = '{{route("search")}}?';
+               @endif
                <?php
                    $url = route('search')."?";
                    foreach($request->all() as $k => $r){

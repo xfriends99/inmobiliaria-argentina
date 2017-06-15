@@ -95,7 +95,13 @@
                             <div class="item" data-id="{{$d->data->id}}">
                                 <a href="{{route('propiedad', $d->data->id)}}">
                                     <div class="description description-grid">
-                                        <div class="label label-default">{{$d->data->operations[0]->operation_type}}</div>
+                                        <div class="label label-default">
+                                            <?php $pop = ''; ?>
+                                            @foreach($d->data->operations as $ope)
+                                                <?php $pop.= ($pop!='') ? ' - '.$ope->operation_type : $ope->operation_type; ?>
+                                            @endforeach
+                                            {{$pop}}
+                                        </div>
                                         <?php
                                         $array = [];
                                         foreach ($d->data->tags as $tag){
