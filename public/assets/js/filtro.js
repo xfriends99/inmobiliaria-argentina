@@ -21,7 +21,7 @@ $(document).ready(function(){
         }
     });
 
-    $('#buscar').click(function(e){
+    $('.buscar').click(function(e){
         if($('#preciodesde').val()!='' && $('#preciohasta').val()!='' && parseInt($('#preciodesde').val())>parseInt($('#preciohasta').val())){
             e.preventDefault();
             return false;

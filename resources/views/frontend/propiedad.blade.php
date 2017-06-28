@@ -29,7 +29,13 @@
                         <section class="page-title">
                             <div class="pull-left">
                                 <h1>{{$data['publication_title']}}</h1>
-                                <h3 class="display-inline">Precio de venta <strong>{{$property->get_available_prices()[0]}}</strong></h3>
+                                <h3 class="display-inline">Precio de venta <strong>
+                                        @if(!isset($emprendimiento))
+                                            {{$property->get_available_prices()[0]}}
+                                        @else
+                                            Desconocido
+                                        @endif
+                                    </strong></h3>
                                 <?php
                                 $array = [];
                                 foreach ($data['tags'] as $tag){
@@ -42,6 +48,7 @@
                             </div>
                             @if(Auth::check() && !$property_user)
                                 <form method="POST" action="{{route('carrito.add', $data['id'])}}">
+                                    <input type="hidden" name="type" @if(!isset($emprendimiento)) value="property" @else value="emprendimiento" @endif>
                                     {{csrf_field()}}
                                     <button type="submit" class="btn btn-primary btn-rounded icon scroll pull-right hidden-xs"><i class="fa fa-shopping-cart"></i>Agregar a mi lista</button>
                                 </form>
@@ -87,12 +94,18 @@
                                     <dl>
                                         <dt>Tipo de propiedad</dt>
                                         <dd>{{$data['type']->name}}</dd>
-                                        <dt>Dormitorios</dt>
-                                        <dd>{{$data['room_amount']}}</dd>
-                                        <dt>Baños</dt>
-                                        <dd>{{$data['bathroom_amount']}}</dd>
-                                        <dt>Garages</dt>
-                                        <dd>{{$data['parking_lot_amount']}}</dd>
+                                        @if(isset($data['room_amount']))
+                                            <dt>Dormitorios</dt>
+                                            <dd>{{$data['room_amount']}}</dd>
+                                        @endif
+                                        @if(isset($data['bathroom_amount']))
+                                            <dt>Baños</dt>
+                                            <dd>{{$data['bathroom_amount']}}</dd>
+                                        @endif
+                                        @if(isset($data['parking_lot_amount']))
+                                            <dt>Garages</dt>
+                                            <dd>{{$data['parking_lot_amount']}}</dd>
+                                        @endif
                                     </dl>
                                 </section>
                                 @if(isset($data['geo_lat']) && isset($data['geo_long']))
@@ -139,7 +152,7 @@
                         <aside class="sidebar box">
                             <section>
                                 <h2>Agendá una visita</h2>
-                                @if(isset($data['company']))
+                                @if(isset($data['company']) && isset($data['company']->logo))
                                     <div class="element"><img src="{{$data['company']->logo}}" alt="" style="width:100px;"></div>
                                 @endif
                                 <!--<h3> <!--<a href="tel:+54"></a></h3>-->

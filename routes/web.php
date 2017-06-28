@@ -60,6 +60,16 @@ Route::get('/{id}/propiedad', [
     'uses' => 'PropertyController@show'
 ]);
 
+Route::get('emprendimientos', [
+    'as' => 'emprendimientos',
+    'uses' => 'DevelopmentController@index'
+]);
+
+Route::get('/{id}/emprendimiento', [
+    'as' => 'emprendimiento',
+    'uses' => 'DevelopmentController@show'
+]);
+
 Route::post('/{id}/propiedad/contacto', [
     'as' => 'propiedad.contacto',
     'uses' => 'PropertyController@contact'

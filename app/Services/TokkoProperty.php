@@ -30,7 +30,12 @@ class TokkoProperty
                curl_setopt($cp, CURLOPT_RETURNTRANSFER, 1);
                curl_setopt($cp, CURLOPT_URL, $url);
                curl_setopt($cp, CURLOPT_TIMEOUT, 60);
-               $this->data = json_decode(curl_exec($cp))->objects[0];
+               $data = json_decode(curl_exec($cp));
+               if(isset($data->objects[0])){
+                   $this->data = $data->objects[0];
+               } else {
+                   $this->data = false;
+               }
                curl_close($cp);
            }
         } catch (Exception $e) {

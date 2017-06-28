@@ -41,7 +41,7 @@
                                     </div>
                                     <div class="col-md-2 col-sm-6">
                                         <div class="form-group">
-                                            <select class="form-control selectpicker" name="propiedad">
+                                            <select class="form-control selectpicker" name="property_type">
                                                 <option value="3">Casa</option>
                                                 <option value="10">Cochera</option>
                                                 <option value="2" selected>Departamento</option>
@@ -59,7 +59,7 @@
                                     </div>
                                     <div class="col-md-1 col-sm-4">
                                         <div class="form-group">
-                                            <button type="submit" class="btn btn-primary pull-right darker"><i class="fa fa-search"></i></button>
+                                            <button type="submit" id="buscar" class="btn btn-primary pull-right darker"><i class="fa fa-search"></i></button>
                                         </div>
                                     </div>
                                 </div>
@@ -156,6 +156,7 @@
 @section('scripts')
     <script>
         $(document).ready(function(){
+            array_results = [];
             $('.typeaheadd').keyup(function(){
                 if($(this).val()=='' || $(this).val().length<3){
                     $('.typeahead-search').hide();
@@ -168,13 +169,27 @@
                         url: "{{route('quicksearch')}}?search="+val,
                         success: function(response){
                             var html = '';
+                            array_results = [];
                             for(var i = 0; i<response.length;i++){
+                                array_results.push(response[i].id);
                                 html += "<li class='typeahead-search-item' val="+response[i].id+">"+response[i].name+"</li>";
                             }
                             $('.typeahead-search ul').html(html);
                             $('.typeahead-search').show();
                         }
                     })
+                }
+            });
+
+            $('#buscar').click(function(e){
+                if($('#typea').val()=='' && $('.typeaheadd').val().length>=3){
+                    if(array_results.length==0){
+                        e.preventDefault();
+                        location.replace('/'+$('.typeaheadd').val()+'/propiedad');
+                        return false;
+                    } else {
+                        $('#typea').val($('.typeaheadd').val());
+                    }
                 }
             });
 

@@ -14,7 +14,7 @@ class TokkoDevelopmentList
   var $BASE_URL = "http://www.tokkobroker.com/api/v1/development/";
   var $SUMMARY_URL = "http://www.tokkobroker.com/api/v1/development/summary/";
 
-  function __construct($auth=null, $status=null, $type=null, $custom_tags=null){
+  function __construct($auth=null, $limit = 20, $offset = 0, $status=null, $type=null, $custom_tags=null){
       try {
           if ($status){
               $url = $this->BASE_URL . "?format=json&construction_status=". $status ."&key=". $auth->key ."&lang=".$auth->get_language();
@@ -29,7 +29,7 @@ class TokkoDevelopmentList
             $url = $url."&custom_tags=".$custom_tags;
           }
 
-          $url = $url."&limit=".$this->get_current_page_limit()."&offset=".$this->get_offset();
+          $url = $url."&limit=".$limit."&offset=".$offset;
 
           $cp = curl_init();
           curl_setopt($cp, CURLOPT_RETURNTRANSFER, 1);
@@ -73,7 +73,7 @@ class TokkoDevelopmentList
     }
 
   function get_current_page_limit(){
-      if ($_REQUEST[$this->querystring_page_limit_key]){
+      if (isset($_REQUEST[$this->querystring_page_limit_key])){
           return intval($_REQUEST[$this->querystring_page_limit_key]);
       }else{
           return $this->default_page_limit;
@@ -85,7 +85,7 @@ class TokkoDevelopmentList
   }
 
   function get_current_page(){
-      if ($_REQUEST[$this->querystring_page_key]){
+      if (isset($_REQUEST[$this->querystring_page_key])){
           return intval($_REQUEST[$this->querystring_page_key]);
       }else{
           return 1;

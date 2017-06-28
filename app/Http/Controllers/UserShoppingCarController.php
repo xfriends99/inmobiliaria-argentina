@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Services\TokkoAuth;
+use App\Services\TokkoDevelopment;
 use App\Services\TokkoProperty;
 use Illuminate\Http\Request;
 use App\Repositories\UserShoppingCarRepository;
@@ -28,9 +29,14 @@ class UserShoppingCarController extends Controller
         $i = 0;
         foreach($properties as $pro){
             $data[] = ['property_id' => $pro->property_id, 'created_at' => $pro->created_at];
-            $property = new TokkoProperty('id', $pro->property_id, $auth);
+            if($pro->type=='property'){
+                $property = new TokkoProperty('id', $pro->property_id, $auth);
+            } else {
+                $property = new TokkoDevelopment('id', $pro->property_id, $auth);
+            }
             $data[$i]['data'] = (array) $property->data;
             $data[$i]['object'] = $property;
+            $data[$i]['type'] = $pro->type;
             $i++;
         }
         return view('frontend.carrito', compact('data'));
@@ -41,7 +47,8 @@ class UserShoppingCarController extends Controller
         if($this->shoppingCar->search(['property_id' => $id, 'user_id' => Auth::user()->id])->get()->first()){
             return redirect()->route('carrito');
         } else {
-            $this->shoppingCar->create(['user_id' => Auth::user()->id, 'property_id' => $id]);
+            $this->shoppingCar->create(['user_id' => Auth::user()->id, 'property_id' => $id,
+                'type' => $request->type]);
             return redirect()->route('carrito')->withSuccess('Propiedad agregada satisfactoriamente');
         }
     }

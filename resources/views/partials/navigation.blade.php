@@ -23,6 +23,7 @@
                         </div>
                     </li>
                     <li><a href="{{route('search')}}?tags=1528&" class="text-green xs-text-white">¡Apto crédito!</a></li>
+                    <li><a href="{{route('emprendimientos')}}" class="text-green xs-text-white">¡Emprendimientos!</a></li>
                 </ul>
             </div>
             @if(Auth::check())

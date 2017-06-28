@@ -34,7 +34,11 @@
                                 <!--PROPIEDAD-->
                                 @foreach($data as $d)
                                 <div class="item item-row" data-id="{{$d['property_id']}}" data-latitude="{{$d['data']['geo_lat']}}" data-longitude="{{$d['data']['geo_long']}}">
-                                    <a href="{{route('propiedad', $d['property_id'])}}">
+                                    @if($d['type']=='property')
+                                        <a href="{{route('propiedad', $d['property_id'])}}">
+                                    @else
+                                        <a href="{{route('emprendimiento', $d['property_id'])}}">
+                                    @endif
                                         <div class="image">
                                             @if(isset($d['data']['photos'][0]))
                                                 <img class="img-height-100" src="{{$d['data']['photos'][0]->image}}" alt="">
@@ -43,7 +47,13 @@
                                         <div class="map hidden-xs hidden-sm"></div>
                                         <div class="description description-row">
                                             <div class="label label-default">Tipo de Operación</div>
-                                            <h3>{{$d['data']['publication_title']}}</h3>
+                                            <h3>
+                                                @if($d['type']=='property')
+                                                    {{$d['data']['publication_title']}}
+                                                @else
+                                                    {{$d['data']['name']}}
+                                                @endif
+                                            </h3>
                                             <address><i class="fa fa-map-marker"></i> {{$d['data']['address']}}</address>
                                             <p class="hidden-xs hidden-sm">{{$d['data']['description']}}</p>
                                         </div>
@@ -55,7 +65,13 @@
                                         </div>
                                     </form>
                                     <div class="controls-more-pricing">
-                                        <h6>{{$d['object']->get_available_prices()[0]}}</h6>
+                                        <h6>
+                                            @if($d['type']=='property')
+                                                {{$d['object']->get_available_prices()[0]}}
+                                            @else
+                                                Desconocido
+                                            @endif
+                                        </h6>
                                     </div>
                                 </div>
                                 @endforeach

@@ -5470,7 +5470,7 @@ section:not(.block) h2 {
   z-index: 1;
   display: block;
 }
-.subject-list img{width:100%; max-height: 200px;}
+.subject-list img{width:100%; max-height: 200px; height: 200px;}
 
 .subject-list .description section {
   padding: 10px 20px;

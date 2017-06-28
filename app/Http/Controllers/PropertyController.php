@@ -22,7 +22,11 @@ class PropertyController extends Controller
     public function show($id)
     {
         $auth = new TokkoAuth(env('API_KEY'));
-        $property = new TokkoProperty('id', $id, $auth);
+        if(preg_match('/^[0-9]+$/', $id)){
+            $property = new TokkoProperty('id', $id, $auth);
+        } else {
+            $property = new TokkoProperty('reference_code', $id, $auth);
+        }
         if($property->data==''){
             abort(404);
         }

@@ -12,8 +12,8 @@ class SearchController extends Controller
 {
     public function index(Request $request, $ord = null)
     {
-        if(isset($request->propiedad) && $request->propiedad!=''){
-            $property_types = '['.$request->propiedad.']';
+        if(isset($request->property_type) && $request->property_type!=''){
+            $property_types = '['.$request->property_type.']';
         } else {
             $property_types = '[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25]';
         }
@@ -24,9 +24,22 @@ class SearchController extends Controller
             $operacion = '[1,2,3]';
         }
         //dd($operacion);
+        $keywords = '';
         if(isset($request->keyword) && $request->keyword!=''){
-            $current_localization_id = '['.$request->keyword.']';
-            $current_localization_type = 'division';
+            if(!preg_match('/[0-9],?/', $request->keyword)){
+                $keywords = [];
+                $keyword = $this->makeSearch($request->keyword);
+                foreach($keyword->objects as $d){
+                    $keywords[] = $d->id;
+                }
+                $keywords = implode(',', $keywords);
+                $current_localization_id = '['.$keywords.']';
+                $current_localization_type = 'division';
+            } else {
+                $current_localization_id = '['.$request->keyword.']';
+                $current_localization_type = 'division';
+                $keywords = $request->keyword;
+            }
         } else {
             $current_localization_id = '1';
             $current_localization_type = 'country';
@@ -47,6 +60,18 @@ class SearchController extends Controller
         if(isset($request->parking_lot_amount) && $request->parking_lot_amount!=''){
             $data = ($data!='') ? ',' : '';
             $data .= '["parking_lot_amount","=",'.$request->parking_lot_amount.']';
+        }
+        if(isset($request->room_amount) && $request->room_amount!=''){
+            $data = ($data!='') ? ',' : '';
+            $data .= '["room_amount","=",'.$request->room_amount.']';
+        }
+        if(isset($request->suite_amount) && $request->suite_amount!=''){
+            $data = ($data!='') ? ',' : '';
+            $data .= '["suite_amount","=",'.$request->suite_amount.']';
+        }
+        if(isset($request->age) && $request->age!=''){
+            $data = ($data!='') ? ',' : '';
+            $data .= '["age","=",'.$request->age.']';
         }
         if(isset($request->tags) && $request->tags!=''){
             $tags = $request->tags;
@@ -90,10 +115,14 @@ class SearchController extends Controller
             $tokko_search->do_search(null, $order_by, $orden);
         }
         $data_filter = $this->getFilterData();
+        $property_types = $data_filter['properties'];
         $locations = $data_filter['locations'];
         $operations = $data_filter['operations'];
         $total_surfaces = $data_filter['total_surfaces'];
         $parkings = $data_filter['parking'];
+        $room_amount = $data_filter['room_amount'];
+        $suite_amount = $data_filter['suite_amount'];
+        $age = $data_filter['age'];
         $tags = $this->order_tags($data_filter['tags']);
         $properties = $tokko_search->get_properties();
         $data_properties = [];
@@ -105,27 +134,35 @@ class SearchController extends Controller
         $map = false;
         if($ord!=null && $ord=='row'){
             $search = route('search', 'row');
-            return view('frontend.search_row', compact('search', 'ord', 'surfaces', 'parkings', 'tags', 'total_surfaces', 'operations', 'locations', 'properties', 'tokko_search', 'request', 'data_properties', 'tokko_search_form', 'map'));
+            return view('frontend.search_row', compact('room_amount', 'suite_amount', 'age', 'keywords', 'property_types', 'search', 'ord', 'surfaces', 'parkings', 'tags', 'total_surfaces', 'operations', 'locations', 'properties', 'tokko_search', 'request', 'data_properties', 'tokko_search_form', 'map'));
         } else if($ord!=null && $ord=='map'){
             $search = route('search', 'map');
             $map = true;
-            return view('frontend.search_map', compact('search', 'ord', 'surfaces', 'parkings', 'tags', 'total_surfaces', 'operations', 'locations', 'properties', 'tokko_search', 'request', 'data_properties', 'tokko_search_form', 'map'));
+            return view('frontend.search_map', compact('room_amount', 'suite_amount', 'age', 'keywords', 'search', 'ord', 'surfaces', 'parkings', 'tags', 'total_surfaces', 'operations', 'locations', 'properties', 'tokko_search', 'request', 'data_properties', 'tokko_search_form', 'map'));
         } else {
             $search = route('search');
-            return view('frontend.search', compact('search', 'ord', 'surfaces', 'parkings', 'tags', 'total_surfaces', 'operations', 'locations', 'properties', 'tokko_search', 'request', 'data_properties', 'tokko_search_form', 'map'));
+            return view('frontend.search', compact('room_amount', 'suite_amount', 'age', 'keywords', 'property_types', 'search', 'ord', 'surfaces', 'parkings', 'tags', 'total_surfaces', 'operations', 'locations', 'properties', 'tokko_search', 'request', 'data_properties', 'tokko_search_form', 'map'));
         }
     }
 
     public function quicksearch(Request $request)
     {
-        $client = new \GuzzleHttp\Client();
-        $res = $client->request('GET', 'http://tokkobroker.com/api/v1/location/quicksearch/?format=json&lang=es_ar&q='.$request->search);
-        $data = json_decode($res->getBody());
+        $data = $this->makeSearch($request->search);
         $response = [];
         foreach($data->objects as $d){
-            $response[] = ['id' => $d->id, 'name' => $d->full_location];
+            $property_final = explode('|', $d->full_location);
+            $property_final = $property_final[count($property_final)-2].' | '.$property_final[count($property_final)-1];
+            $response[] = ['id' => $d->id, 'name' => $property_final];
         }
         return $response;
+    }
+
+    public function makeSearch($search)
+    {
+        $client = new \GuzzleHttp\Client();
+        $res = $client->request('GET', 'http://tokkobroker.com/api/v1/location/quicksearch/?format=json&lang=es_ar&q='.$search);
+        $data = json_decode($res->getBody());
+        return $data;
     }
 
     public function order_tags($tags)
@@ -139,7 +176,7 @@ class SearchController extends Controller
         }
         asort($sort);
         foreach ($sort as $s){
-            $response[] = $data[$s];
+            $response[$data[$s]->tag_id] = $data[$s];
         }
         return $response;
 
@@ -158,15 +195,24 @@ class SearchController extends Controller
             $locations_name[$locat->location_id] = $locat;
         }
         $operations = $tokko_search->get_summary_field('operation_types');
+        $properties = [];
+        $proper = $tokko_search->get_summary_field('property_types');
         $parking = $tokko_search->get_summary_field('parking_lot_amount');
         $total_surfaces = $tokko_search->get_summary_total_surface();
         $tags = $this->order_tags($tokko_search->get_summary_field('tags'));
+        $room_amount = $tokko_search->get_summary_field('room_amount');
+        $suite_amount =  $tokko_search->get_summary_field('suite_amount');
+        $age = $tokko_search->get_summary_field('age');
         $tags_name = [];
         foreach($tags as $ta){
             $tags_name[$ta->tag_id] = $ta;
         }
+        foreach($proper as $p){
+            $properties[$p->id] = $p;
+        }
         return ['locations' => $locations_name, 'operations' => $operations, 'total_surfaces' => $total_surfaces,
-        'tags' => $tags_name, 'parking' => $parking];
+        'tags' => $tags_name, 'parking' => $parking, 'properties' => $properties,
+            'room_amount' => $room_amount, 'suite_amount' => $suite_amount, 'age' => $age];
     }
 
     public function getSurfaces($surfaces)
