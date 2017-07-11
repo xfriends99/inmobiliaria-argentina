@@ -88,8 +88,13 @@ class SearchController extends Controller
         } else {
             $price_to = '';
         }
+        if(isset($request->currency) && ($request->currency=='USD' || $request->currency=='ARG')){
+            $currency = $request->currency;
+        } else {
+            $currency = 'ANY';
+        }
         $example_data = '{"current_localization_id":'.$current_localization_id.',"current_localization_type":"'.$current_localization_type.'","price_from":"'.$price_from.'","price_to":"'.$price_to.'","operation_types":'.$operacion.',
-        "property_types":'.$property_types.',"currency":"ANY","filters":['.$data.'],"with_tags":['.$tags.']}';
+        "property_types":'.$property_types.',"currency":"'.$currency.'","filters":['.$data.'],"with_tags":['.$tags.']}';
         $auth = new TokkoAuth(env('API_KEY'));
         $tokko_search = new TokkoSearch($auth, $example_data);
         $orden = null;
@@ -152,7 +157,7 @@ class SearchController extends Controller
         foreach($data->objects as $d){
             $property_final = explode('|', $d->full_location);
             $property_final = $property_final[count($property_final)-2].' | '.$property_final[count($property_final)-1];
-            $response[] = ['id' => $d->id, 'name' => $property_final];
+            $response[] = ['id' => $d->id, 'name' => $d->name];
         }
         return $response;
     }

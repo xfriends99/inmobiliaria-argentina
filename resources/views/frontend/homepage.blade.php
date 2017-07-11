@@ -157,6 +157,7 @@
     <script>
         $(document).ready(function(){
             array_results = [];
+            properties_id = [];
             $('.typeaheadd').keyup(function(){
                 if($(this).val()=='' || $(this).val().length<3){
                     $('.typeahead-search').hide();
@@ -170,9 +171,17 @@
                         success: function(response){
                             var html = '';
                             array_results = [];
+                            properties_id = [];
                             for(var i = 0; i<response.length;i++){
                                 array_results.push(response[i].id);
-                                html += "<li class='typeahead-search-item' val="+response[i].id+">"+response[i].name+"</li>";
+                                if(!properties_id[response[i].name]){
+                                    html += "<li class='typeahead-search-item' val="+response[i].id+">"+response[i].name+"</li>";
+                                }
+                                if(properties_id[response[i].name]){
+                                    properties_id[response[i].name] += ','+response[i].id;
+                                } else {
+                                    properties_id[response[i].name] = response[i].id;
+                                }
                             }
                             $('.typeahead-search ul').html(html);
                             $('.typeahead-search').show();
@@ -196,7 +205,7 @@
             $('body').on('click', '.typeahead-search-item', function(){
                 console.log($(this).attr('val'));
                 $('.typeahead-search').hide();
-                $('#typea').val($(this).attr('val'));
+                $('#typea').val(properties_id[$(this).html()]);
                 $('.typeaheadd').val($(this).html());
             });
             /*$('.typeahead').typeahead({

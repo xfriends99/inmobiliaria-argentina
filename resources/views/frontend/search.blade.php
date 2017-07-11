@@ -205,6 +205,19 @@
     <script src="/assets/js/filtro.js"></script>
     <script>
         $(document).ready(function(){
+            $('.change-price').click(function(){
+               if(!$(this).hasClass('button-price-filter-active')){
+                   var otherElement = $('.button-price-filter-active');
+                   if(otherElement){
+                       otherElement.removeClass('button-price-filter-active');
+                       otherElement.addClass('button-price-filter');
+                   }
+                   $(this).removeClass('button-price-filter');
+                   $(this).addClass('button-price-filter-active');
+                   $('#price-filter').val($(this).attr('data-price'));
+               }
+            });
+
             $('#send_precio').click(function(){
                 if($('#preciodesde').val()!='' || $('#preciohasta').val()!='') {
                     var url = '{{route("search")}}?';

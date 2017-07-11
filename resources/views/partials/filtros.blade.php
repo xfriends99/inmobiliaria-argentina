@@ -289,9 +289,13 @@
                     </div>
                     <div id="Precio" class="panel-collapse collapse" role="tabpanel" aria-labelledby="Filtro2">
                         <button type="submit" class="btn btn-danger btn-lg buscar">Aplicar filtro</button>
+                        <div class="button-price-filter-container">
+                            <button type="button" data-price="ARG" class="change-price @if(isset($request->currency) && $request->currency=='ARG') button-price-filter-active @else button-price-filter @endif">PESOS</button><button data-price="USD" class="change-price @if(isset($request->currency) && $request->currency=='USD') button-price-filter-active @else button-price-filter @endif" type="button">DOLARES</button>
+                            <input type="hidden" id="price-filter" name="currency" @if(isset($request->currency) && ($request->currency=='USD' || $request->currency=='ARG')) value="{{$request->currency}}" @else value="ANY" @endif >
+                        </div>
                         <ul class="padding-left-15px padding-right-15px">
-                            <input @if(isset($request->preciodesde)) value="{{$request->preciodesde}}" @endif type="number" class="form-control display-inline width-45 margin-right-4" id="preciodesde" name="preciodesde" placeholder="Desde">
-                            <input @if(isset($request->preciohasta)) value="{{$request->preciohasta}}" @endif type="number" class="form-control display-inline width-45 float-right" id="preciohasta" name="preciohasta" placeholder="Hasta">
+                            <input @if(isset($request->preciodesde)) value="{{$request->preciodesde}}" @endif type="text" class="form-control display-inline width-45 margin-right-4" id="preciodesde" name="preciodesde" placeholder="Desde">
+                            <input @if(isset($request->preciohasta)) value="{{$request->preciohasta}}" @endif type="text" class="form-control display-inline width-45 float-right" id="preciohasta" name="preciohasta" placeholder="Hasta">
                             <!--<button id="send_precio" type="button" class="btn btn-framed btn-light-frame padding-5px width-100">Aplicar precio<i class="fa fa-search"></i></button>-->
                         </ul>
                     </div>
