@@ -10,6 +10,12 @@ use Illuminate\Http\Request;
 
 class SearchController extends Controller
 {
+    private $partidos = ['Countries y B. Cerrados' => '26437,26439,55972,26442,52178,26463,26464,26597,55982,55973,26444,26445,25927,26446,55995,52180,55978,26467,52068,52926,55983,26447,26470,55980,26473,26474,26660,55974,51444,26475,55996,26476,26477',
+        'GBA Sur' => '26354,26554,26357,26457,25914,26548,26565,26540,26553,26368,26367,26453,26569,26592,26559',
+        'GBA Norte' => '25818,24820', 'Ciudad de Buenos Aires' => '24678,24682,24697,24707,24687,24699,24721,24728,24681,24753,24673,24678,24676,24682,24677,24688,24690,24697,24705,24706,24707,24708,24709,24710,24687,24718,24721,24724,24728,24701,24681,24702,24738,24739,24704,24740,24746,24749,24753',
+        'Costa Atlántica' => '26609,26610,26611,26612,26613,26614,26615,26616,26617,26618,26619,26620,26622,26623,26624,26717,26718,26719,26720,26721,26722,26723,26724,26725,26726,26727,26728,26729,26730,51445,51446,51852',
+        'Otras Provincias' => '155'];
+
     public function index(Request $request, $ord = null)
     {
         if(isset($request->property_type) && $request->property_type!=''){
@@ -43,6 +49,27 @@ class SearchController extends Controller
         } else {
             $current_localization_id = '1';
             $current_localization_type = 'country';
+        }
+
+        if(isset($request->partidos) && $request->partidos!=''){
+            $parts = '';
+            foreach(explode(',', $request->partidos) as $key){
+                if($parts!=''){
+                    $parts .= ',';
+                }
+                $parts .= $this->partidos[$key];
+            }
+            if($current_localization_id!='1'){
+                $keyy = explode(',',substr($current_localization_id, 1, strlen($current_localization_id)-2));
+                foreach($keyy as $ke){
+                    $parts = str_replace($ke.',', '', $parts);
+                }
+                $parts = str_replace(',,', ',', $parts);
+                $current_localization_id = '['.$parts.','.substr($current_localization_id, 1, strlen($current_localization_id)-2).']';
+            } else {
+                $current_localization_id = '['.$parts.']';
+            }
+            $current_localization_type = 'division';
         }
         $data = '';
         $surfaces = '';
@@ -95,6 +122,7 @@ class SearchController extends Controller
         }
         $example_data = '{"current_localization_id":'.$current_localization_id.',"current_localization_type":"'.$current_localization_type.'","price_from":"'.$price_from.'","price_to":"'.$price_to.'","operation_types":'.$operacion.',
         "property_types":'.$property_types.',"currency":"'.$currency.'","filters":['.$data.'],"with_tags":['.$tags.']}';
+
         $auth = new TokkoAuth(env('API_KEY'));
         $tokko_search = new TokkoSearch($auth, $example_data);
         $orden = null;
@@ -137,16 +165,25 @@ class SearchController extends Controller
         }
         $tokko_search_form = new TokkoSearchForm($auth);
         $map = false;
+        $partidos = $this->partidos;
+        $partidos_select = '';
+        if(isset($request->partidos)){
+            foreach(explode(',', $request->partidos) as $key){
+                if(isset($this->partidos[$key])){
+                    $partidos_select .= $this->partidos[$key];
+                }
+            }
+        }
         if($ord!=null && $ord=='row'){
             $search = route('search', 'row');
-            return view('frontend.search_row', compact('room_amount', 'suite_amount', 'age', 'keywords', 'property_types', 'search', 'ord', 'surfaces', 'parkings', 'tags', 'total_surfaces', 'operations', 'locations', 'properties', 'tokko_search', 'request', 'data_properties', 'tokko_search_form', 'map'));
+            return view('frontend.search_row', compact('partidos_select', 'partidos', 'room_amount', 'suite_amount', 'age', 'keywords', 'property_types', 'search', 'ord', 'surfaces', 'parkings', 'tags', 'total_surfaces', 'operations', 'locations', 'properties', 'tokko_search', 'request', 'data_properties', 'tokko_search_form', 'map'));
         } else if($ord!=null && $ord=='map'){
             $search = route('search', 'map');
             $map = true;
-            return view('frontend.search_map', compact('room_amount', 'suite_amount', 'age', 'keywords', 'search', 'ord', 'surfaces', 'parkings', 'tags', 'total_surfaces', 'operations', 'locations', 'properties', 'tokko_search', 'request', 'data_properties', 'tokko_search_form', 'map'));
+            return view('frontend.search_map', compact('partidos_select', 'partidos', 'room_amount', 'suite_amount', 'age', 'keywords', 'search', 'ord', 'surfaces', 'parkings', 'tags', 'total_surfaces', 'operations', 'locations', 'properties', 'tokko_search', 'request', 'data_properties', 'tokko_search_form', 'map'));
         } else {
             $search = route('search');
-            return view('frontend.search', compact('room_amount', 'suite_amount', 'age', 'keywords', 'property_types', 'search', 'ord', 'surfaces', 'parkings', 'tags', 'total_surfaces', 'operations', 'locations', 'properties', 'tokko_search', 'request', 'data_properties', 'tokko_search_form', 'map'));
+            return view('frontend.search', compact('partidos_select', 'partidos', 'room_amount', 'suite_amount', 'age', 'keywords', 'property_types', 'search', 'ord', 'surfaces', 'parkings', 'tags', 'total_surfaces', 'operations', 'locations', 'properties', 'tokko_search', 'request', 'data_properties', 'tokko_search_form', 'map'));
         }
     }
 

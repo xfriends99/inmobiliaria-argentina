@@ -5,7 +5,7 @@
         <ul class="tags">
             @foreach($request->all() as $key => $value)
                 @if($value!='')
-                    @if($key!='operacion' && $key!='property_type' && $key!='propiedad' && $key!='orden' && $key!='page' && $key!='ord' && $key!='surfaces' && $key!='parking_lot_amount' && $key!='room_amount' && $key!='suite_amount' && $key!='age' && $key!='tags' && $key!='keyword' && $key!='preciodesde' && $key!='preciohasta')
+                    @if($key!='operacion' && $key!='property_type' && $key!='partidos' && $key!='propiedad' && $key!='orden' && $key!='page' && $key!='ord' && $key!='surfaces' && $key!='parking_lot_amount' && $key!='room_amount' && $key!='suite_amount' && $key!='age' && $key!='tags' && $key!='keyword' && $key!='preciodesde' && $key!='preciohasta')
                         <?php
                         $url = '';
                         foreach($request->all() as $kk => $rr){
@@ -202,6 +202,29 @@
                             <?php
                             }
                             ?>
+                        @elseif($key=='partidos')
+                            <?php
+                            $url = '';
+                            foreach($request->all() as $kk => $rr){
+                                if($kk!='partidos'){
+                                    $url .= $kk.'='.$rr.'&';
+                                }
+                            };
+                            $tagss = explode(',', $request->partidos);
+                            foreach($tagss as $ta){
+                            if(preg_match('/,'.$ta.'/', $request->partidos)){
+                                $o = ''.str_replace(','.$ta,'', $request->partidos);
+                            } else if(preg_match('/'.$ta.',/', $request->partidos)){
+                                $o = str_replace($ta.',','', $request->partidos);
+                            } else {
+                                $o = str_replace($ta,'', $request->partidos);
+                            }
+                            $urll = $url.'partidos='.$o.'&';
+                            ?>
+                                <li>{{$ta}} <a href="{{$search}}?{{$urll}}"><i class="fa fa-close"></i></a></li>
+                            <?php
+                            }
+                            ?>
                         @elseif($key=='keyword')
                             <?php
                             $url = '';
@@ -273,9 +296,28 @@
                         <ul class="padding-left-15px padding-right-15px scroll-y">
                             @foreach ($locations as $location)
                                 <li><span class="color-azul">{{$location->location_name}} </span>
-                                    <input @if(isset($request->keyword) && in_array($location->location_id, explode(',', $keywords))) checked @endif value="{{$location->location_id}}" type="checkbox" class="keyword"></li>
+                                    <input @if((isset($request->keyword) && in_array($location->location_id, explode(',', $keywords))) || (isset($request->partidos) && preg_match('/'.$location->location_id.'/', $partidos_select))) checked @endif value="{{$location->location_id}}" type="checkbox" class="keyword"></li>
                             @endforeach
                             <input type="hidden" @if(isset($request->keyword)) value="{{$keywords}}" @endif id="keyword" name="keyword">
+                        </ul>
+                    </div>
+                </div>
+                <div class="panel panel-default">
+                    <div class="panel-heading" role="tab" id="Filtro20">
+                        <h4 class="panel-title">
+                            <a role="button" data-toggle="collapse" data-parent="#accordion" href="#Partido" aria-expanded="true" aria-controls="Partido">
+                                Partidos
+                            </a>
+                        </h4>
+                    </div>
+                    <div id="Partido" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="Filtro20">
+                        <button type="submit" class="btn btn-danger btn-lg buscar">Aplicar filtro</button>
+                        <ul class="padding-left-15px padding-right-15px scroll-y">
+                            @foreach ($partidos as $key => $partido)
+                                <li><span class="color-azul">{{$key}} </span>
+                                    <input @if(isset($request->partidos) && preg_match('/'.$key.'/', $request->partidos)) checked @endif value="{{$key}}" data-value="{{$partido}}" type="checkbox" class="partidos"></li>
+                            @endforeach
+                                <input type="hidden" @if(isset($request->partidos)) value="{{$request->partidos}}" @endif id="partidos" name="partidos">
                         </ul>
                     </div>
                 </div>

@@ -18,6 +18,12 @@ $(document).ready(function(){
                 value = input.val().replace(checkbox.val(), '');
             }
             input.val(value);
+            if(clase=='partidos'){
+                var elements = checkbox.attr('data-value').split(',');
+                for(var i = 0; i<elements.length; i++){
+                    $('.keyword[value="'+elements[i]+'"]').attr('checked', false);
+                }
+            }
         }
     });
 
