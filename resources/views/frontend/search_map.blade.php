@@ -50,7 +50,6 @@
                         </div>
                         <div class="hero-section full-screen has-map has-sidebar margin-top-15px">
                             <div id="map" style="height: 100%; width: 100%;"></div>
-<!--                        <iframe src="https://www.google.com/maps/embed/v1/place?key=AIzaSyASbXb64d2fKwT3rdqqCvZYmq4jCdFDtIQ&q={{$properties[0]->data->location->full_location}}" width="100%" height="360" frameborder="0" style="border:0" allowfullscreen></iframe>-->
                         </div>
                         <section>
                             <!--PROPIEDAD-->

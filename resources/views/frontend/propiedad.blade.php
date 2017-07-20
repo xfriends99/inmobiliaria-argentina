@@ -106,6 +106,18 @@
                                             <dt>Garages</dt>
                                             <dd>{{$data['parking_lot_amount']}}</dd>
                                         @endif
+                                        @if(isset($data['roofed_surface']))
+                                            <dt>Sup. Cubierta</dt>
+                                            <dd>{{$data['roofed_surface']}} {{$data['surface_measurement']}}</dd>
+                                        @endif
+                                        @if(isset($data['unroofed_surface']))
+                                            <dt>Sup. Descubierta</dt>
+                                            <dd>{{$data['unroofed_surface']}} {{$data['surface_measurement']}}</dd>
+                                        @endif
+                                        @if(isset($data['surface']))
+                                            <dt>Sup. Total</dt>
+                                            <dd>{{$data['total_surface']}} {{$data['surface_measurement']}}</dd>
+                                        @endif
                                     </dl>
                                 </section>
                                 @if(isset($data['geo_lat']) && isset($data['geo_long']))

@@ -301,7 +301,7 @@
                             <input type="hidden" @if(isset($request->keyword)) value="{{$keywords}}" @endif id="keyword" name="keyword">
                         </ul>
                     </div>
-                </div>
+                </div><!--
                 <div class="panel panel-default">
                     <div class="panel-heading" role="tab" id="Filtro20">
                         <h4 class="panel-title">
@@ -320,7 +320,7 @@
                                 <input type="hidden" @if(isset($request->partidos)) value="{{$request->partidos}}" @endif id="partidos" name="partidos">
                         </ul>
                     </div>
-                </div>
+                </div>-->
                 <div class="panel panel-default">
                     <div class="panel-heading" role="tab" id="Filtro2">
                         <h4 class="panel-title">

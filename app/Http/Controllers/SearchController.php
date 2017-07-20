@@ -180,7 +180,7 @@ class SearchController extends Controller
         } else if($ord!=null && $ord=='map'){
             $search = route('search', 'map');
             $map = true;
-            return view('frontend.search_map', compact('partidos_select', 'partidos', 'room_amount', 'suite_amount', 'age', 'keywords', 'search', 'ord', 'surfaces', 'parkings', 'tags', 'total_surfaces', 'operations', 'locations', 'properties', 'tokko_search', 'request', 'data_properties', 'tokko_search_form', 'map'));
+            return view('frontend.search_map', compact('partidos_select', 'partidos', 'room_amount', 'suite_amount', 'age', 'keywords', 'property_types', 'search', 'ord', 'surfaces', 'parkings', 'tags', 'total_surfaces', 'operations', 'locations', 'properties', 'tokko_search', 'request', 'data_properties', 'tokko_search_form', 'map'));
         } else {
             $search = route('search');
             return view('frontend.search', compact('partidos_select', 'partidos', 'room_amount', 'suite_amount', 'age', 'keywords', 'property_types', 'search', 'ord', 'surfaces', 'parkings', 'tags', 'total_surfaces', 'operations', 'locations', 'properties', 'tokko_search', 'request', 'data_properties', 'tokko_search_form', 'map'));
