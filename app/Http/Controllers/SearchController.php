@@ -10,6 +10,15 @@ use Illuminate\Http\Request;
 
 class SearchController extends Controller
 {
+    private $searchCanning = ['26436' =>'Esteban Echeverría / Countries/B. Cerrados',
+        '26450' => 'Esteban Echeverría / Canning', '52069' => 'Mi Refugio',
+        '26457' => 'Ezeiza / Canning', '26459' => 'Ezeiza / Countries/B. Cerrado',
+        '52066' => 'Don Joaquín', '52070' => 'CISSAB', '52071' => 'Chacras del Sur',
+        '52073' => 'La Magdalena', '26593' => 'San Vicente / Countries/B. Cerrado',
+        '52178' => 'Club de Campo El Candil', '52179' => 'El Lauquén',
+        '52180' => 'Fincas de San Vicente', '52181' => 'San Vicente / Lagos de San Eliseo',
+        '81333' => 'San Eliseo', '81334' => 'Presidente Perón / Lagos de San Eliseo'];
+
     private $partidos = ['Countries y B. Cerrados' => '26437,26439,55972,26442,52178,26463,26464,26597,55982,55973,26444,26445,25927,26446,55995,52180,55978,26467,52068,52926,55983,26447,26470,55980,26473,26474,26660,55974,51444,26475,55996,26476,26477',
         'GBA Sur' => '26354,26554,26357,26457,25914,26548,26565,26540,26553,26368,26367,26453,26569,26592,26559',
         'GBA Norte' => '25818,24820', 'Ciudad de Buenos Aires' => '24678,24682,24697,24707,24687,24699,24721,24728,24681,24753,24673,24678,24676,24682,24677,24688,24690,24697,24705,24706,24707,24708,24709,24710,24687,24718,24721,24724,24728,24701,24681,24702,24738,24739,24704,24740,24746,24749,24753',
@@ -34,9 +43,15 @@ class SearchController extends Controller
         if(isset($request->keyword) && $request->keyword!=''){
             if(!preg_match('/[0-9],?/', $request->keyword)){
                 $keywords = [];
-                $keyword = $this->makeSearch($request->keyword);
-                foreach($keyword->objects as $d){
-                    $keywords[] = $d->id;
+                if(strlen($request->keyword)>=3 && preg_match('/'.strtolower($request->keyword).'/', 'canning')){
+                    foreach($this->searchCanning as $key=>$val){
+                        $keywords[] = $key;
+                    }
+                } else {
+                    $keyword = $this->makeSearch($request->keyword);
+                    foreach($keyword->objects as $d){
+                        $keywords[] = $d->id;
+                    }
                 }
                 $keywords = implode(',', $keywords);
                 $current_localization_id = '['.$keywords.']';
@@ -174,27 +189,34 @@ class SearchController extends Controller
                 }
             }
         }
+        $search_canning = $this->searchCanning;
         if($ord!=null && $ord=='row'){
             $search = route('search', 'row');
-            return view('frontend.search_row', compact('partidos_select', 'partidos', 'room_amount', 'suite_amount', 'age', 'keywords', 'property_types', 'search', 'ord', 'surfaces', 'parkings', 'tags', 'total_surfaces', 'operations', 'locations', 'properties', 'tokko_search', 'request', 'data_properties', 'tokko_search_form', 'map'));
+            return view('frontend.search_row', compact('search_canning', 'partidos_select', 'partidos', 'room_amount', 'suite_amount', 'age', 'keywords', 'property_types', 'search', 'ord', 'surfaces', 'parkings', 'tags', 'total_surfaces', 'operations', 'locations', 'properties', 'tokko_search', 'request', 'data_properties', 'tokko_search_form', 'map'));
         } else if($ord!=null && $ord=='map'){
             $search = route('search', 'map');
             $map = true;
-            return view('frontend.search_map', compact('partidos_select', 'partidos', 'room_amount', 'suite_amount', 'age', 'keywords', 'property_types', 'search', 'ord', 'surfaces', 'parkings', 'tags', 'total_surfaces', 'operations', 'locations', 'properties', 'tokko_search', 'request', 'data_properties', 'tokko_search_form', 'map'));
+            return view('frontend.search_map', compact('search_canning', 'partidos_select', 'partidos', 'room_amount', 'suite_amount', 'age', 'keywords', 'property_types', 'search', 'ord', 'surfaces', 'parkings', 'tags', 'total_surfaces', 'operations', 'locations', 'properties', 'tokko_search', 'request', 'data_properties', 'tokko_search_form', 'map'));
         } else {
             $search = route('search');
-            return view('frontend.search', compact('partidos_select', 'partidos', 'room_amount', 'suite_amount', 'age', 'keywords', 'property_types', 'search', 'ord', 'surfaces', 'parkings', 'tags', 'total_surfaces', 'operations', 'locations', 'properties', 'tokko_search', 'request', 'data_properties', 'tokko_search_form', 'map'));
+            return view('frontend.search', compact('search_canning', 'partidos_select', 'partidos', 'room_amount', 'suite_amount', 'age', 'keywords', 'property_types', 'search', 'ord', 'surfaces', 'parkings', 'tags', 'total_surfaces', 'operations', 'locations', 'properties', 'tokko_search', 'request', 'data_properties', 'tokko_search_form', 'map'));
         }
     }
 
     public function quicksearch(Request $request)
     {
-        $data = $this->makeSearch($request->search);
         $response = [];
-        foreach($data->objects as $d){
-            $property_final = explode('|', $d->full_location);
-            $property_final = $property_final[count($property_final)-2].' | '.$property_final[count($property_final)-1];
-            $response[] = ['id' => $d->id, 'name' => $d->name];
+        if(strlen($request->search)>=3 && preg_match('/'.strtolower($request->search).'/', 'canning')){
+            foreach($this->searchCanning as $key=>$val){
+                $response[] = ['id' => $key, 'name' => $val];
+            }
+        } else {
+            $data = $this->makeSearch($request->search);
+            foreach($data->objects as $d){
+                $property_final = explode('|', $d->full_location);
+                $property_final = $property_final[count($property_final)-2].' | '.$property_final[count($property_final)-1];
+                $response[] = ['id' => $d->id, 'name' => $d->name];
+            }
         }
         return $response;
     }

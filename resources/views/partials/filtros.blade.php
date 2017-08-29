@@ -244,8 +244,10 @@
                                 }
                                 $urll = $url.'keyword='.$o.'&';
                                 ?>
-                                @if(isset($locations[$ta]))
-                                <li>{{$locations[$ta]->location_name}} <a href="{{$search}}?{{$urll}}"><i class="fa fa-close"></i></a></li>
+                                @if(isset($locations[$ta]) && !isset($search_canning[$ta]))
+                                    <li>{{$locations[$ta]->location_name}} <a href="{{$search}}?{{$urll}}"><i class="fa fa-close"></i></a></li>
+                                @elseif(isset($search_canning[$ta]))
+                                    <li>{{$search_canning[$ta]}} <a href="{{$search}}?{{$urll}}"><i class="fa fa-close"></i></a></li>
                                 @endif
                                 <?php
                             }
