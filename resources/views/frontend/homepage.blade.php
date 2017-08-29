@@ -28,7 +28,7 @@
                             <h2 class="hidden-sm hidden-md hidden-lg">Agendá ahora una visita y descubrí oportunidades imperdibles</h2>
                         </div>
                         <div class="form search-form horizontal">
-                            <form method="GET" action="{{route('search')}}">
+                            <form method="GET" action="{{route('search')}}" id="for-search">
                                 <div class="row">
                                     <div class="col-md-2 col-sm-6">
                                         <div class="form-group">
@@ -158,6 +158,16 @@
         $(document).ready(function(){
             array_results = [];
             properties_id = [];
+            search = true;
+
+            $('#for-search').submit(function(e){
+                if(!search){
+                    e.preventDefault();
+                    e.stopPropagation();
+                    return false;
+                }
+            });
+
             $('.typeaheadd').keyup(function(){
                 if($(this).val()=='' || $(this).val().length<3){
                     $('.typeahead-search').hide();
@@ -165,11 +175,13 @@
                 } else {
                     $('.typeahead-search').hide();
                     var val = $(this).val();
+                    search = false;
                     $.ajax({
                         method: "GET",
                         url: "{{route('quicksearch')}}?search="+val,
                         success: function(response){
                             var html = '';
+                            search = true;
                             array_results = [];
                             properties_id = [];
                             for(var i = 0; i<response.length;i++){
@@ -191,7 +203,7 @@
             });
 
             $('#buscar').click(function(e){
-                if($('#typea').val()=='' && $('.typeaheadd').val().length>=3){
+                if($('#typea').val()=='' && $('.typeaheadd').val().length>=3 && search){
                     if(array_results.length==0){
                         e.preventDefault();
                         location.replace('/'+$('.typeaheadd').val()+'/propiedad');
